@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ym.traegergill">
+
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <!-- sdcard -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+    <!-- 网络 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+    <!-- 定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <application
+        android:name="com.ym.traegergill.App"
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:supportsRtl="true"
+        android:icon="@mipmap/icon"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"
+        >
+
+        <meta-data
+            android:name="TUYA_SMART_APPKEY"
+            android:value="998yqtshy4te4vttva53" />
+
+        <meta-data
+            android:name="TUYA_SMART_SECRET"
+            android:value="tgerq5dehmava7vaddasawygxkhwmfdj" />
+
+        <service android:name="org.eclipse.paho.android.service.MqttService"/>
+
+        <activity
+            android:name=".activity.MainActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.ItemsDetailActivity"
+            android:theme="@style/AppFullTheme" />
+        <activity android:name=".activity.FilterActivity" />
+        <activity
+            android:name=".activity.RecipesDetailActivity"
+            android:theme="@style/AppFullTheme" />
+        <activity
+            android:name=".activity.CreateAccountActivity"
+            android:theme="@style/AppWhiteTheme"
+            android:windowSoftInputMode="adjustUnspecified|stateUnspecified" />
+        <activity
+            android:name=".activity.SignInActivity"
+            android:theme="@style/AppFullTheme"
+            android:windowSoftInputMode="adjustUnspecified|stateUnspecified" />
+        <activity android:name=".activity.SetUpActivity" />
+        <activity android:name=".activity.EditNameActivity" />
+        <activity android:name=".activity.EditPasswordActivity" />
+        <activity
+            android:name=".activity.ConnectWifiGuidActivity"
+            android:theme="@style/AppFullTheme" />
+        <activity android:name=".activity.AddDevicesGuidActivity" />
+        <activity android:name=".activity.SetUpWifiDeviceActivity" />
+        <activity android:name=".activity.TryConnectDeviceActivity" />
+        <activity android:name=".activity.DevicesActivity" />
+        <activity
+            android:name=".activity.RemoteControlActivity"
+            android:theme="@style/AppWhiteTheme" />
+        <activity android:name=".activity.SettingGrillActivity" />
+        <activity android:name=".activity.AlarmsActivity" />
+        <activity android:name=".activity.MiniFeedRateActivity" />
+        <activity android:name=".activity.TempCalibrationActivity" />
+        <activity android:name=".activity.CountryListActivity" />
+        <activity android:name=".activity.AddDeviceSuccessActivity" />
+        <activity android:name=".activity.AddDeviceErrorActivity" />
+        <activity android:name=".activity.TempChartActivity" />
+
+
+        <activity
+            android:name=".activity.ForgetPswActivity"
+            android:theme="@style/AppFullTheme"
+            android:windowSoftInputMode="adjustUnspecified|stateUnspecified" />
+
+        <receiver android:name="com.ym.traegergill.broadcast.WifiBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+                <action android:name="android.net.wifi.STATE_CHANGE" />
+            </intent-filter>
+        </receiver>
+        <service
+            android:name="com.ym.traegergill.service.TraegerGillService"
+            android:exported="true">
+        </service>
+
+        <receiver android:name="com.tuya.smart.android.base.broadcast.NetworkBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.tuya.smart.android.hardware.service.GwBroadcastMonitorService"
+            android:exported="true"
+            android:label="UDPService"
+            android:process=":monitor">
+            <intent-filter>
+                <action android:name="tuya.intent.action.udp" />
+
+                <category android:name="tuya" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.tuya.smart.android.hardware.service.GwTransferService"
+            android:exported="true"
+            android:label="TCPService"
+            android:process=":transfer">
+            <intent-filter>
+                <action android:name="tuya.intent.action.tcp" />
+
+                <category android:name="tuya" />
+            </intent-filter>
+        </service>
+    </application>
+
+</manifest>

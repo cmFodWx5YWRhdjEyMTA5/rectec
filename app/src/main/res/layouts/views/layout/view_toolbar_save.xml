@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/default_toolbar_height"
+    android:layout_alignParentTop="true"
+    android:background="@color/statusColor"
+    app:layout_collapseMode="pin"
+    app:layout_scrollFlags="scroll|enterAlways"
+    app:elevation="@dimen/default_elevation">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:onClick="exit"
+            android:paddingRight="10dp"
+            android:src="@drawable/filter_btn_arrow" />
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:fontFamily="sans-serif"
+            android:text="title"
+            android:textColor="@color/white"
+            android:transitionName="@string/iv_img_transitionName"
+            android:textSize="17sp"
+            android:visibility="visible" />
+        <TextView
+            android:id="@+id/save"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:gravity="center_vertical"
+            android:text="@string/SAVE"
+            android:textColor="@color/color9999"
+            android:textSize="16sp"
+            android:paddingRight="22dp"
+            android:enabled="false"
+            />
+    </RelativeLayout>
+</android.support.v7.widget.Toolbar>

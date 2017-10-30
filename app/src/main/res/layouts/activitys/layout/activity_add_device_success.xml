@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+    <include
+        android:id="@+id/layout_title"
+        layout="@layout/view_toolbar_back"></include>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/device_success"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Success!"
+        android:textStyle="bold"
+        android:textColor="@color/color32"
+        android:textSize="27sp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="25dp"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_device_success_text"
+        android:textSize="20sp"
+        android:textColor="@color/color49"
+        android:lineSpacingExtra="12dp"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/skip"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="11dp"
+            android:layout_marginBottom="42dp"
+            android:background="@drawable/orange_btn_corners_bg"
+            android:text="Skip"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            />
+        <EditText
+            android:id="@+id/et_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:paddingLeft="16.5dp"
+            android:layout_marginRight="16.5dp"
+            android:background="@drawable/edit_orange_backg"
+            android:textColor="@color/color444"
+            android:hint="My WiFIRE"
+            android:textColorHint="@color/color9999"
+            android:layout_above="@id/skip"
+            android:translationZ="1dp"
+            android:textSize="17sp" />
+
+
+
+    </RelativeLayout>
+</LinearLayout>

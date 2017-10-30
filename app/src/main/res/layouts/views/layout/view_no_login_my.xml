@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/no_login_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_collapseMode="parallax">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="35dp"
+        android:text="Welcome!"
+        android:textColor="@color/color32"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/sign_in"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="@drawable/orange_btn_corners_bg"
+        android:gravity="center"
+        android:text="@string/SIGN_IN"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:translationZ="3dp" />
+
+    <TextView
+        android:id="@+id/create_account"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/orange_btn_corners_bg"
+        android:gravity="center"
+        android:text="@string/CREATE_ACCOUNT"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:translationZ="3dp" />
+</LinearLayout>

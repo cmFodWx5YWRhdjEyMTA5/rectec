@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="ShapeIndicatorView">
+        <attr name="horizontalSpace" format="reference|integer"></attr>
+        <attr name="fullColor" format="reference|color"></attr>
+        <attr name="radius" format="reference|integer"></attr>
+    </declare-styleable>
+    <declare-styleable name="ObservableScrollView">
+        <attr name="zoomId" format="reference|integer" />
+        <attr name="maxZoom" format="dimension" />
+    </declare-styleable>
+
+<!--    SeekArc  -->
+    <declare-styleable name="SeekArc">
+        <attr name="thumb" format="reference" />
+        <attr name="thumbOffset" format="dimension" />
+        <attr name="max" format="integer" />
+        <attr name="progressWidth" format="dimension" />
+        <attr name="arcWidth" format="dimension" />
+        <attr name="progress" format="integer" />
+        <attr name="rotation" format="integer" />
+        <attr name="startAngle" format="integer" />
+        <attr name="sweepAngle" format="integer" />
+        <attr name="arcColor" format="color" />
+        <attr name="progressColor" format="color" />
+        <attr name="roundEdges" format="boolean" />
+        <attr name="touchInside" format="boolean" />
+        <attr name="clockwise" format="boolean" />
+        <attr name="enabled" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="SeekArcTheme">
+        <attr name="seekArcStyle" format="reference"></attr>
+    </declare-styleable>
+    <!--    SeekArc  -->
+
+    <declare-styleable name="CircleProgressView">
+        <!-- Text-->
+        <attr name="cpv_text" format="string"/>
+        <attr name="cpv_unit" format="string"/>
+        <attr name="cpv_textColor" format="color"/>
+        <attr name="cpv_unitColor" format="color"/>
+        <attr name="cpv_showUnit" format="boolean"/>
+        <attr name="cpv_autoTextColor" format="boolean"/>
+        <attr name="cpv_textTypeface" format="string"/>
+        <attr name="cpv_unitTypeface" format="string"/>
+        <attr name="cpv_decimalFormat" format="string"/>
+
+        <!-- Text sizes-->
+        <attr name="cpv_textSize" format="dimension"/>
+        <attr name="cpv_unitSize" format="dimension"/>
+        <attr name="cpv_textScale" format="float"/>
+        <attr name="cpv_unitScale" format="float"/>
+        <attr name="cpv_unitToTextScale" format="float"/>
+        <attr name="cpv_autoTextSize" format="boolean"/>
+
+
+        <!-- Progress Bar -->
+        <attr name="cpv_value" format="float"/>
+        <attr name="cpv_maxValue" format="float"/>
+        <attr name="cpv_barWidth" format="dimension"/>
+        <attr name="cpv_barColor" format="color"/>
+        <attr name="cpv_barColor1" format="color"/>
+        <attr name="cpv_barColor2" format="color"/>
+        <attr name="cpv_barColor3" format="color"/>
+        <attr name="cpv_startAngle" format="integer"/>
+
+        <!-- Spinner-->
+        <attr name="cpv_spinColor" format="color"/>
+        <attr name="cpv_spinSpeed" format="float"/>
+        <attr name="cpv_spinBarLength" format="float"/>
+        <attr name="cpv_showTextInSpinningMode" format="boolean"/>
+
+        <!-- Rim-->
+        <attr name="cpv_rimColor" format="color"/>
+        <attr name="cpv_rimWidth" format="dimension"/>
+
+        <!-- Contour-->
+        <attr name="cpv_contourColor" format="color"/>
+        <attr name="cpv_contourSize" format="dimension"/>
+
+        <!-- Background color-->
+        <attr name="cpv_fillColor" format="color"/>
+
+        <!-- Seek mode-->
+        <attr name="cpv_seekMode" format="boolean"/>
+
+        <!-- Block -->
+        <attr name="cpv_blockCount" format="integer"/>
+        <attr name="cpv_blockScale" format="float"/>
+
+        <attr name="cpv_textMode" format="enum">
+            <enum name="Text" value="0"/>
+            <enum name="Percent" value="1"/>
+            <enum name="Value" value="2"/>
+        </attr>
+
+        <attr name="cpv_unitPosition" format="enum">
+            <enum name="top" value="0"/>
+            <enum name="bottom" value="1"/>
+            <enum name="left_top" value="2"/>
+            <enum name="right_top" value="3"/>
+            <enum name="left_bottom" value="2"/>
+            <enum name="right_bottom" value="3"/>
+        </attr>
+
+    </declare-styleable>
+</resources>

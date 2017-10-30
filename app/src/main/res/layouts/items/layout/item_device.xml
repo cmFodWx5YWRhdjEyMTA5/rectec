@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:background="@drawable/corners_bg"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginRight="10dp"
+    >
+    <ImageView
+        android:id="@+id/device_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/device_icon_oven"
+        android:layout_centerVertical="true"
+        />
+    <ImageView
+        android:id="@+id/icon_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/my_icon_arrow"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        />
+    <TextView
+        android:id="@+id/device_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OFFLINE"
+        android:maxLines="1"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/icon_arrow"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="10dp"
+        android:textSize="14sp"
+        android:textColor="@color/color666"
+        />
+
+    <TextView
+        android:id="@+id/device_name"
+        android:layout_toRightOf="@id/device_icon"
+        android:layout_toLeftOf="@id/device_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Girllasdasdasdas as1"
+        android:textColor="@color/color32"
+        android:maxLines="1"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:textSize="18sp"
+        android:layout_marginLeft="16dp"
+        android:layout_centerVertical="true"
+        />
+
+
+
+    <!--<CheckBox
+        android:id="@+id/is_open"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:button="@null"
+        android:background="@drawable/device_btn_check"
+        android:checked="false"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+
+        />-->
+</RelativeLayout>

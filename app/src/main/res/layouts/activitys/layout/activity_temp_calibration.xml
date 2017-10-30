@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/view_toolbar_back"></include>
+
+    <RelativeLayout
+        android:id="@+id/mid_control"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="35dp">
+
+        <ImageView
+            android:id="@+id/iv_less"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/less_press"
+            android:translationZ="8dp" />
+
+        <LinearLayout
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/control_orange_yuanxing"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:translationZ="2dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="38dp"
+                android:text="Temperature"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Calibration"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/percent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3.0"
+                    android:textColor="@color/white"
+                    android:textSize="48sp" />
+
+                <TextView
+                    android:id="@+id/percent_unit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="%"
+                    android:textColor="@color/white"
+                    android:textSize="48sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/add_press"
+            android:translationZ="8dp" />
+    </RelativeLayout>
+
+    <com.ym.traegergill.view.ElasticityScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="7dp"
+                android:layout_marginTop="25dp"
+                android:lineSpacingExtra="8dp"
+                android:text="@string/temp_calibration_step1_text"
+                android:textColor="@color/color32"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="7dp"
+                android:layout_marginTop="28dp"
+                android:lineSpacingExtra="8dp"
+                android:text="@string/temp_calibration_step2_text"
+                android:textColor="@color/color32"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="7dp"
+                android:layout_marginTop="28dp"
+                android:lineSpacingExtra="8dp"
+                android:text="3) Temperature calibration = (device temperature-350)/350*100%;"
+                android:textColor="@color/color32"
+                android:textSize="16sp" />
+            <TextView
+                android:id="@+id/text_orange"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="7dp"
+                android:layout_marginTop="8dp"
+                android:lineSpacingExtra="8dp"
+                android:text="For example,device temperature is 370℃,then temperature calibration is (370-350)/350*100%=6%."
+                android:textColor="@color/orange_text"
+                android:textSize="15sp" />
+
+
+        </LinearLayout>
+    </com.ym.traegergill.view.ElasticityScrollView>
+</LinearLayout>
