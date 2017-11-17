@@ -134,7 +134,7 @@
                 android:layout_marginRight="7dp"
                 android:layout_marginTop="8dp"
                 android:lineSpacingExtra="8dp"
-                android:text="For example,device temperature is 370℃,then temperature calibration is (370-350)/350*100%=6%."
+                android:text="For example,device temperature is 370℉,then temperature calibration is (370-350)/350*100%=6%."
                 android:textColor="@color/orange_text"
                 android:textSize="15sp" />
 

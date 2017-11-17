@@ -46,6 +46,7 @@ public class MiniFeedRateActivity extends BaseActivity {
     ImageView ivAdd;
     private TuyaDevice mTuyaDevice;
     private String mDevId;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,9 +61,9 @@ public class MiniFeedRateActivity extends BaseActivity {
         mTuyaDevice = new TuyaDevice(mDevId);
         Map<String, Object> list = TuyaUser.getDeviceInstance().getDps(mDevId);
         for (Map.Entry<String, Object> entry : list.entrySet()) {
-            if(entry.getKey().equals("104")){
-                double temp = Integer.parseInt(entry.getValue().toString())/10.0;
-                percent.setText(temp+"");
+            if (entry.getKey().equals("104")) {
+                double temp = Integer.parseInt(entry.getValue().toString()) / 10.0;
+                percent.setText(temp + "");
             }
         }
         initListener();
@@ -79,9 +80,9 @@ public class MiniFeedRateActivity extends BaseActivity {
                 enableViews(false);
                 JSONObject jsonObject = JSONObject.parseObject(dpStr);
                 for (Map.Entry<String, Object> entry : jsonObject.entrySet()) {
-                    if(entry.getKey().equals("104")){
-                        double temp = Integer.parseInt(entry.getValue().toString())/10.0;
-                        percent.setText(temp+"");
+                    if (entry.getKey().equals("104")) {
+                        double temp = Integer.parseInt(entry.getValue().toString()) / 10.0;
+                        percent.setText(temp + "");
                     }
                 }
                 enableViews(true);
@@ -89,17 +90,22 @@ public class MiniFeedRateActivity extends BaseActivity {
 
             @Override
             public void onRemoved(String s) {
-                DialogUtil.simpleSmartDialog(getActivity(), "设备被移除了", null);
+                DialogUtil.simpleSmartDialog(getActivity(), getString(R.string.device_has_unbinded), null);
             }
 
             @Override
             public void onStatusChanged(String s, boolean b) {
-                DialogUtil.simpleSmartDialog(getActivity(), "设备离线了", null);
+                if(!b){
+                    DialogUtil.simpleSmartDialog(getActivity(), getString(R.string.device_offLine), null);
+                }
             }
 
             @Override
             public void onNetworkStatusChanged(String s, boolean b) {
-                //DialogUtil.simpleSmartDialog(getActivity(), "网络异常", null);
+                if(b == false){
+                    DialogUtil.simpleSmartDialog(getActivity(), getString(R.string.network_error), null);
+                }
+
             }
 
             @Override
@@ -120,10 +126,37 @@ public class MiniFeedRateActivity extends BaseActivity {
         public boolean onTouch(View view, MotionEvent motionEvent) {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 updateAddOrSubtract(view.getId());    //手指按下时触发不停的发送消息
+                switch (view.getId()) {
+                    case R.id.iv_add:
+                        ivAdd.setImageResource(R.drawable.icon_add_pre);
+                        break;
+                    case R.id.iv_less:
+                        ivLess.setImageResource(R.drawable.icon_less_pre);
+                        break;
+
+                }
             } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                 stopAddOrSubtract();    //手指抬起时停止发送
+                switch (view.getId()) {
+                    case R.id.iv_add:
+                        ivAdd.setImageResource(R.drawable.icon_add);
+                        break;
+                    case R.id.iv_less:
+                        ivLess.setImageResource(R.drawable.icon_less);
+                        break;
+
+                }
             } else if (motionEvent.getAction() == MotionEvent.ACTION_CANCEL) {
                 stopAddOrSubtract();    //手指抬起时停止发送
+                switch (view.getId()) {
+                    case R.id.iv_add:
+                        ivAdd.setImageResource(R.drawable.icon_add);
+                        break;
+                    case R.id.iv_less:
+                        ivLess.setImageResource(R.drawable.icon_less);
+                        break;
+
+                }
             }
             return true;
         }
@@ -153,18 +186,18 @@ public class MiniFeedRateActivity extends BaseActivity {
             int now;
             switch (viewId) {
                 case R.id.iv_less:
-                    now = (int)(Double.parseDouble(percent.getText().toString())*10) - 5;
+                    now = (int) (Double.parseDouble(percent.getText().toString()) * 10) - 5;
                     if (now <= 29) {
                         return;
                     }
-                    percent.setText(now/10.0 + "");
+                    percent.setText(now / 10.0 + "");
                     break;
                 case R.id.iv_add:
-                    now = (int)(Double.parseDouble(percent.getText().toString())*10) + 5;
+                    now = (int) (Double.parseDouble(percent.getText().toString()) * 10) + 5;
                     if (now >= 251) {
                         return;
                     }
-                    percent.setText(now/10.0 + "");
+                    percent.setText(now / 10.0 + "");
                     break;
             }
         }
@@ -174,7 +207,7 @@ public class MiniFeedRateActivity extends BaseActivity {
         if (scheduledExecutor != null) {
             scheduledExecutor.shutdownNow();
             scheduledExecutor = null;
-            int now = (int)(Double.parseDouble(percent.getText().toString())*10);
+            int now = (int) (Double.parseDouble(percent.getText().toString()) * 10);
             sendCommand(now);
         }
     }
@@ -190,6 +223,7 @@ public class MiniFeedRateActivity extends BaseActivity {
             public void onError(String code, String error) {
                 DialogUtil.simpleSmartDialog(getActivity(), code + " : " + error, null);
             }
+
             @Override
             public void onSuccess() {
             }
@@ -209,6 +243,7 @@ public class MiniFeedRateActivity extends BaseActivity {
             }
         }
     }
+
     private Runnable mRunnable = new Runnable() {
         @Override
         public void run() {
@@ -223,4 +258,13 @@ public class MiniFeedRateActivity extends BaseActivity {
             enableViews(true);
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mTuyaDevice != null) {
+            mTuyaDevice.unRegisterDevListener();
+            mTuyaDevice.onDestroy();
+        }
+    }
 }

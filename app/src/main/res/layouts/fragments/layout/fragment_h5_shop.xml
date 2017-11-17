@@ -61,23 +61,14 @@
         android:id="@+id/pull_to_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <com.ym.traegergill.view.ScrollWebView
-        android:id="@+id/tbsContent"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/default_bottom_tab_height"
-        />
+
+        <WebView
+            android:id="@+id/webView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/default_bottom_tab_height"
+            />
     </com.yalantis.phoenix.PullToRefreshView>
- <!--   <ImageView
-        android:id="@+id/back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:src="@drawable/btn_arrow"
-        android:fitsSystemWindows="true"
-        android:layout_marginBottom="@dimen/default_bottom_tab_height"
-        android:padding="15dp"
-        />-->
+
 
 </RelativeLayout>

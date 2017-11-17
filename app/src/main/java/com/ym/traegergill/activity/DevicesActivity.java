@@ -3,6 +3,7 @@ package com.ym.traegergill.activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +23,7 @@ import com.ym.traegergill.adapter.DevicesRvAdapter;
 import com.ym.traegergill.tools.OUtil;
 import com.ym.traegergill.tuya.presenter.DeviceListPresenter;
 import com.ym.traegergill.tuya.utils.DialogUtil;
+import com.ym.traegergill.tuya.utils.ProgressUtil;
 import com.ym.traegergill.tuya.utils.ToastUtil;
 import com.ym.traegergill.tuya.view.IDeviceListView;
 
@@ -79,6 +81,13 @@ public class DevicesActivity extends BaseActivity implements IDeviceListView {
 
     private void init() {
         title.setText(getString(R.string.home_my_device));
+        ProgressUtil.showLoading(this,"loading..");
+        new Handler().postDelayed(new Runnable() {//定义延时任务模仿网络请求
+            @Override
+            public void run() {
+                ProgressUtil.hideLoading();
+            }
+        }, 1000);
         deviceListPresenter = new DeviceListPresenter(this, this);
         initRecycler();
     }
@@ -110,7 +119,7 @@ public class DevicesActivity extends BaseActivity implements IDeviceListView {
         adapter.setOnMyItemLongClickListener(new DevicesRvAdapter.OnMyItemLongClickListener() {
             @Override
             public void onNormalLongClick(View v, final int position) {
-                DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.sure_delete_device)
+                DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.remove_the_device)
                         , getActivity().getString(R.string.Yes), getActivity().getString(R.string.No), null, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -134,6 +143,7 @@ public class DevicesActivity extends BaseActivity implements IDeviceListView {
                                         break;
                                     case DialogInterface.BUTTON_NEGATIVE:
                                         //No
+                                        TLog("devId : " + adapter.getItem(position).getDevId());
                                         //ToastUtil.shortToast(getActivity(),"BUTTON_NEGATIVE");
                                         break;
                                 }

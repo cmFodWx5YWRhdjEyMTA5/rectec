@@ -9,12 +9,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.ym.traegergill.R;
-import com.ym.traegergill.bean.RecipesBean;
+import com.ym.traegergill.modelBean.Recipe;
 import com.ym.traegergill.tools.Constants;
+import com.ym.traegergill.tools.GlideLoadUtil;
 import com.ym.traegergill.tools.OUtil;
 
 import java.util.List;
@@ -26,20 +28,21 @@ public class ShowRecipesRvAdapter extends RecyclerView.Adapter<ShowRecipesRvAdap
 
 
     private Context mContext;
-    private List<RecipesBean> mDataList;
+    private List<Recipe> mDataList;
     private OnMyItemClickListener onMyItemClickListener;
     private RequestOptions options;
     public void setOnMyItemClickListener(OnMyItemClickListener onMyItemClickListener) {
         this.onMyItemClickListener = onMyItemClickListener;
     }
 
-    public ShowRecipesRvAdapter(Context context, List<RecipesBean> mDatas) {
+    public ShowRecipesRvAdapter(Context context, List<Recipe> mDatas) {
         mContext = context;
         mDataList = mDatas;
         int width = OUtil.getScreenWidth(mContext);
         options = new RequestOptions()
                 .placeholder(Constants.PLACEHOLDER)
                 .error(Constants.ERROR)
+                .priority(Priority.NORMAL)
                 .override(width,OUtil.dip2px(mContext,200))
                 .diskCacheStrategy(DiskCacheStrategy.NONE);
     }
@@ -56,25 +59,24 @@ public class ShowRecipesRvAdapter extends RecyclerView.Adapter<ShowRecipesRvAdap
         .centerCrop(); // 长的一边撑满
         .fitCenter(); // 短的一边撑满
         */
-        RecipesBean data = mDataList.get(position);
-        Glide.with(mContext)
-                .load(data.getImageUrl())
-                .transition(DrawableTransitionOptions.withCrossFade(R.anim.shake_error, 1000))
-                .apply(options)
-                .thumbnail(0.1f)
-                .into(holder.img);
+        Recipe data = mDataList.get(position);
 
-        holder.desc.setText(data.getDesc());
-        holder.desInImg.setText(data.getDesInImg());
+        GlideLoadUtil.load(mContext,data.getMainPic(),options,holder.img);
 
-        if(data.getTime() % 1 == 0){// 是这个整数，小数点后面是0
+
+        holder.desc.setText(data.getDescribe());
+        holder.desInImg.setText(data.getTitle());
+        String timeiInner = data.getCookTime();
+        timeiInner = timeiInner.substring(timeiInner.indexOf("than")+4,timeiInner.length());
+        holder.time.setText(timeiInner);
+       /* if(data.getTime() % 1 == 0){// 是这个整数，小数点后面是0
             int i = (new Double(data.getTime())).intValue();
             holder.time.setText(i+"hrs");
         }else{//不是整数，小数点后面不是0
             holder.time.setText(data.getTime()+"hrs");
-        }
+        }*/
 
-        holder.ingredients.setText(data.getIngredientNum()+" ingredients");
+        holder.ingredients.setText(data.getIngredientSize()+" ingredients");
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

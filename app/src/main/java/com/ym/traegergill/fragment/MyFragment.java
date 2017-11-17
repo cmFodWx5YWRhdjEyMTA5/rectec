@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -17,11 +18,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.lzy.okhttputils.callback.StringCallback;
+import com.tuya.smart.android.user.bean.User;
+import com.tuya.smart.sdk.TuyaUser;
 import com.ym.traegergill.R;
 import com.ym.traegergill.activity.BaseActivity;
 import com.ym.traegergill.activity.CreateAccountActivity;
@@ -32,13 +35,17 @@ import com.ym.traegergill.bean.MyFragmentBean;
 import com.ym.traegergill.broadcast.TraegerGillBroadcastHelper;
 import com.ym.traegergill.db.SQLiteDbUtil;
 import com.ym.traegergill.db.bean.UserData;
+import com.ym.traegergill.net.URLs;
 import com.ym.traegergill.tools.CircularAnimUtil;
 import com.ym.traegergill.tools.Constants;
+import com.ym.traegergill.tools.MyNetTool;
 import com.ym.traegergill.tools.OUtil;
 import com.ym.traegergill.tools.SharedPreferencesUtils;
 import com.ym.traegergill.tools.WifiUtil;
 import com.ym.traegergill.tuya.utils.DialogUtil;
-import com.ym.traegergill.tuya.utils.ToastUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +54,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import okhttp3.Call;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by Administrator on 2017/9/27.
@@ -59,7 +69,8 @@ public class MyFragment extends BaseFragment {
     AppBarLayout appBarLayout;
     @BindView(R.id.content)
     CoordinatorLayout content;
-    private SharedPreferencesUtils spUtils;
+    @BindView(R.id.my_email)
+    TextView myEmail;
     @BindView(R.id.title)
     TextView title;
     @BindView(R.id.sign_in)
@@ -67,12 +78,11 @@ public class MyFragment extends BaseFragment {
     @BindView(R.id.create_account)
     TextView createAccount;
     Unbinder unbinder;
-    @BindView(R.id.setting)
-    ImageView setting;
+
     @BindView(R.id.hi_account)
     TextView hiAccount;
-    @BindView(R.id.order_history)
-    TextView orderHistory;
+    @BindView(R.id.setting)
+    TextView setting;
     @BindView(R.id.support)
     TextView support;
     @BindView(R.id.no_login_layout)
@@ -85,17 +95,22 @@ public class MyFragment extends BaseFragment {
     MyFragmentRvAdapter adapter;
     private UpdateUserStatusReceiver updateUserStatusReceiver;
 
-
+    private SharedPreferencesUtils spUtils;
     class UpdateUserStatusReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(TraegerGillBroadcastHelper.ACTION_UPDATE_USERSTATUS)) {
-                updateUI();
-            }else  if (action.equals(TraegerGillBroadcastHelper.ACTION_TEST_WIFI)) {
+                if (spUtils.getBoolean(Constants.ISLOGIN, false)) {
+                    netUserInfo(TuyaUser.getUserInstance().getUser().getUid());
+                }else{
+                    updateUI();
+                }
+            } else if (action.equals(TraegerGillBroadcastHelper.ACTION_TEST_WIFI)) {
                 //updateUI();
                 String data = intent.getStringExtra("data");
-                support.setText(data);
+                showToastSuccess(data);
+                //support.setText(data);
             }
         }
     }
@@ -132,6 +147,9 @@ public class MyFragment extends BaseFragment {
         return view;
     }
 
+
+
+
     @Override
     public void onResume() {
         super.onResume();
@@ -139,21 +157,28 @@ public class MyFragment extends BaseFragment {
     }
 
     private void updateUI() {
-        if (spUtils.getBoolean(Constants.ISLOGIN, false)) {
+        if (spUtils.getBoolean(Constants.ISLOGIN, false) && TuyaUser.getUserInstance().isLogin()) {
             loginLayout.setVisibility(View.VISIBLE);
             noLoginLayout.setVisibility(View.GONE);
             setting.setVisibility(View.VISIBLE);
+            user = TuyaUser.getUserInstance().getUser();
+            myEmail.setText(user.getEmail());
+            hiAccount.setText("Hi " + spUtils.getString(Constants.FIRST_NAME) + "!");
         } else {
             loginLayout.setVisibility(View.GONE);
             noLoginLayout.setVisibility(View.VISIBLE);
             setting.setVisibility(View.VISIBLE);
         }
     }
+
+
+
     SQLiteDbUtil dbUtil;
+    User user;
     private void init() {
         spUtils = SharedPreferencesUtils.getSharedPreferencesUtil(getActivity());
         dbUtil = SQLiteDbUtil.getSQLiteDbUtil();
-        title.setText("MY");
+        title.setText("MORE");
 
         if (infos == null) {
             infos = new ArrayList<>();
@@ -170,16 +195,30 @@ public class MyFragment extends BaseFragment {
             adapter.setItemClick(new MyFragmentRvAdapter.OnItemClick() {
                 @Override
                 public void OnClick(RecyclerView parent, View view, int position, MyFragmentBean Info) {
-                    spUtils.setValue(Constants.TEST_NUM,position);
-                    switch (position){
+                    spUtils.setValue(Constants.TEST_NUM, position);
+                    switch (position) {
                         case 0:
+                            /*if(spUtils.getBoolean(Constants.ISLOGIN, false))
+                                netUserInfo(TuyaUser.getUserInstance().getUser().getUid());
+                            else
+                                OUtil.TLog("没有登录");*/
                             break;
                         case 1:
-                           OUtil.TLog( new Gson().toJson(dbUtil.query(UserData.class)));
+                            OUtil.TLog(new Gson().toJson(dbUtil.query(UserData.class)));
                             break;
                         case 2:
                             dbUtil.drop(UserData.class);
                             OUtil.TLog("drop");
+                            break;
+                        case 6:
+
+                           /* if(TuyaUser.getUserInstance().isLogin()){
+                                boolean flag = TuyaUser.getUserInstance().removeUser();
+                                TLog(""+flag);
+                                showToastSuccess( ""+flag);
+                            }else{
+                                showToastError("no login");
+                            }*/
                             break;
                     }
                 }
@@ -198,10 +237,10 @@ public class MyFragment extends BaseFragment {
     }
 
 
-    @OnClick({R.id.order_history, R.id.support, R.id.sign_in, R.id.create_account, R.id.setting,R.id.login_layout})
+    @OnClick({R.id.support, R.id.sign_in, R.id.create_account, R.id.setting, R.id.login_layout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.order_history:
+         /*   case R.id.order_history:
                 DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.ez_notSupport_5G_tip)
                         , getActivity().getString(R.string.ez_notSupport_5G_change), getActivity().getString(R.string.ez_notSupport_5G_continue), null, new DialogInterface.OnClickListener() {
                             @Override
@@ -216,7 +255,7 @@ public class MyFragment extends BaseFragment {
                                 }
                             }
                         }).show();
-                break;
+                break;*/
             case R.id.support:
                 WifiInfoShow();
                 // startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
@@ -245,12 +284,12 @@ public class MyFragment extends BaseFragment {
                 break;
             case R.id.setting:
                 startActivity(new Intent(getActivity(), SetUpActivity.class));
-                ((BaseActivity)getActivity()).overridePendingTransition(getActivity(),BaseActivity.ANIMATE_SLIDE_TOP_FROM_BOTTOM);
+                ((BaseActivity) getActivity()).overridePendingTransition(getActivity(), BaseActivity.ANIMATE_SLIDE_TOP_FROM_BOTTOM);
                 break;
             case R.id.login_layout:
-                startActivity(new Intent(getActivity(), SetUpActivity.class));
-                ((BaseActivity)getActivity()).overridePendingTransition(getActivity(),BaseActivity.ANIMATE_SLIDE_TOP_FROM_BOTTOM);
-
+               /* startActivity(new Intent(getActivity(), SetUpActivity.class));
+                ((BaseActivity) getActivity()).overridePendingTransition(getActivity(), BaseActivity.ANIMATE_SLIDE_TOP_FROM_BOTTOM);
+*/
                 break;
 
         }
@@ -275,11 +314,11 @@ public class MyFragment extends BaseFragment {
 
 */
 
-        if(WifiUtil.isWifiConnected(getActivity())){
-            WifiManager wifiManager= (WifiManager) getActivity().getSystemService(getActivity().WIFI_SERVICE);
+        if (WifiUtil.isWifiConnected(getActivity())) {
+            WifiManager wifiManager = (WifiManager) getActivity().getSystemService(getActivity().WIFI_SERVICE);
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            String str = "已连接WIFI\n WIFI信息 ：  "+wifiInfo.toString() + "\n" +
-                    " WIFI名称 ：  "+wifiInfo.getSSID();
+            String str = "已连接WIFI\n WIFI信息 ：  " + wifiInfo.toString() + "\n" +
+                    " WIFI名称 ：  " + wifiInfo.getSSID();
             showToastSuccess(str);
             //若想兼容4.4就要这样：
          /*   String tempSsidString = wifiInfo.getSSID();
@@ -291,9 +330,55 @@ public class MyFragment extends BaseFragment {
             }*/
 
 
-        }else{
+        } else {
             showToastError("未连接WIFI 跳转!");
-            startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
+            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+        }
+    }
+
+    private void netUserInfo(final String uid) {
+        StringCallback callback = new StringCallback() {
+            @Override
+            public void onResponse(boolean isFromCache, String s, Request request, @Nullable Response response) {
+                TLog("json : " + s);
+                try {
+                    JSONObject obj = new JSONObject(s);
+                    if (obj.optInt("code") == 200) {
+                        JSONObject content = obj.optJSONObject("content");
+                        spUtils.setValue(Constants.ISLOGIN, true);
+                        spUtils.setValue(Constants.EMAIL,content.optString("account"));
+                        spUtils.setValue(Constants.FIRST_NAME,content.optString("firstname"));
+                        spUtils.setValue(Constants.LAST_NAME,content.optString("lastname"));
+                        updateUI();
+                    }else{
+                        TLog(obj.optString("msg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onAfter(boolean isFromCache, @Nullable String s, Call call, @Nullable Response response, @Nullable Exception e) {
+                super.onAfter(isFromCache, s, call, response, e);
+            }
+        };
+
+        if(!MyNetTool.netCross(getActivity(),uid,URLs.getUserinfo,callback)){
+            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
+                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    System.exit(0);
+                                    break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    netUserInfo(uid);
+                                    break;
+                            }
+                        }
+                    }).show();
         }
     }
 }

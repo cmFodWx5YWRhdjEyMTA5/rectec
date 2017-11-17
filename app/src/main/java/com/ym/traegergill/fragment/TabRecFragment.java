@@ -1,8 +1,11 @@
 package com.ym.traegergill.fragment;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,11 +28,27 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.lzy.okhttputils.callback.StringCallback;
+import com.lzy.okhttputils.model.HttpParams;
+import com.tuya.smart.sdk.TuyaUser;
 import com.ym.traegergill.R;
 import com.ym.traegergill.activity.FilterActivity;
+import com.ym.traegergill.activity.ItemsDetailActivity;
 import com.ym.traegergill.activity.MainActivity;
-import com.ym.traegergill.adapter.MyFragmentPagerAdapter;
+import com.ym.traegergill.activity.RecipesSearchActivity;
+import com.ym.traegergill.adapter.MyDyFragmentPagerAdapter;
+import com.ym.traegergill.adapter.MyDyFragmentPagerAdapter;
+import com.ym.traegergill.broadcast.TraegerGillBroadcastHelper;
+import com.ym.traegergill.modelBean.Filter;
+import com.ym.traegergill.modelBean.FilterGroupByFilterTypeModel;
+import com.ym.traegergill.net.URLs;
+import com.ym.traegergill.tools.Constants;
+import com.ym.traegergill.tools.MyNetTool;
 import com.ym.traegergill.tools.OUtil;
+import com.ym.traegergill.tools.SharedPreferencesUtils;
+import com.ym.traegergill.tuya.utils.DialogUtil;
+import com.ym.traegergill.tuya.utils.ProgressUtil;
 
 import net.lucode.hackware.magicindicator.MagicIndicator;
 import net.lucode.hackware.magicindicator.ViewPagerHelper;
@@ -40,6 +59,10 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTit
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.TriangularPagerIndicator;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.SimplePagerTitleView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,7 +71,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-
+import okhttp3.Call;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by Administrator on 2017/9/18.
@@ -70,19 +95,69 @@ public class TabRecFragment extends BaseFragment {
     TextView filter;
     @BindView(R.id.et_search)
     EditText etSearch;
-    List<String> titles;
-    List<Fragment> fragments;
+    ArrayList<String> titles;
+    ArrayList<Fragment> fragments;
+    private CommonNavigator commonNavigator;
+    private MyDyFragmentPagerAdapter myPagerAdapter;
+    private List<Filter> filterList;
+    private SharedPreferencesUtils spUtils;
+    private UpdateUserStatusReceiver updateUserStatusReceiver;
 
-    private MyFragmentPagerAdapter myPagerAdapter;
+    class UpdateUserStatusReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(TraegerGillBroadcastHelper.ACTION_UPDATE_USERSTATUS)) {
+                showCollection(spUtils.getBoolean(Constants.ISLOGIN, false));
+            }
+        }
+    }
+
+    private void showCollection(boolean isLogin) {
+      /*  initTab();
+        if(isLogin){
+            if(!titles.get(1).equals("FAVORITES")){
+                titles.add(1,"FAVORITES");
+                fragments.add(1,new ShowRecipesFragment(Constants.MAIN_INGREDIENT_FAVORITES));
+                commonNavigator.notifyDataSetChanged();
+                myPagerAdapter.notifyDataSetChanged();
+            }
+        }else{
+            if(titles.get(1).equals("FAVORITES")) {
+                titles.remove(1);
+                fragments.remove(1);
+                commonNavigator.notifyDataSetChanged();
+                myPagerAdapter.notifyDataSetChanged();
+            }
+        }
+        TLog("f size : " + myPagerAdapter.getCount());*/
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_tab_rec, container, false);
         unbinder = ButterKnife.bind(this, view);
+        init();
+        return view;
+    }
+
+    private void init() {
+        title.setText("RECIPES");
+        spUtils = SharedPreferencesUtils.getSharedPreferencesUtil(getActivity());
+    }
+
+    @Override
+    protected void onFragmentFirstVisible() {
+        super.onFragmentFirstVisible();
+
         initViewPager();
         initListener();
-        return view;
+        //注册广播
+/*        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(TraegerGillBroadcastHelper.ACTION_UPDATE_USERSTATUS);
+        updateUserStatusReceiver = new UpdateUserStatusReceiver();
+        getActivity().registerReceiver(updateUserStatusReceiver, intentFilter);*/
     }
 
     private void initListener() {
@@ -99,7 +174,6 @@ public class TabRecFragment extends BaseFragment {
     }
 
     private void search() {
-
         String searchContext = etSearch.getText().toString().trim();
         if (TextUtils.isEmpty(searchContext)) {
             showToastError("不能为空");
@@ -116,7 +190,16 @@ public class TabRecFragment extends BaseFragment {
     }
 
     private void showEtSearch() {
-        if (title.getVisibility() == View.INVISIBLE) {
+
+        getActivity().startActivity(
+                new Intent(getActivity(), RecipesSearchActivity.class),
+                ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        (Activity) getActivity(),
+                        Pair.create((View)searchFor, getActivity().getString(R.string.iv_img_transitionName))
+                ).toBundle()
+        );
+
+       /* if (title.getVisibility() == View.INVISIBLE) {
             showInput(false);
             Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.search_anim_hide);
             etSearch.startAnimation(animation);
@@ -162,23 +245,91 @@ public class TabRecFragment extends BaseFragment {
 
                 }
             });
+        }*/
+
+    }
+    Gson gson;
+    private void initViewPager() {
+        gson = new Gson();
+        netTabData();
+    }
+
+    private void netTabData() {
+        StringCallback callback = new StringCallback() {
+            @Override
+            public void onResponse(boolean isFromCache, String s, Request request, @Nullable Response response) {
+                TLog("isFromCache : " + isFromCache+"  json : " + s);
+                try {
+                    JSONObject obj = new JSONObject(s);
+                    TLog(obj.optString("msg"));
+                    if (obj.optInt("code") == 200) {
+                        JSONArray data = obj.optJSONArray("content");
+                        for(int i = 0 ;i<data.length();i++){
+                            FilterGroupByFilterTypeModel model = gson.fromJson(data.optJSONObject(i).toString(),FilterGroupByFilterTypeModel.class);
+                            if( model.getFilterTypeid()== Constants.MAIN_INGREDIENT){
+                                filterList = model.getFilterList();
+                                initTab();
+                                break;
+                            }
+                        }
+                    }else{
+                        showToastError(obj.optString("msg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onAfter(boolean isFromCache, @Nullable String s, Call call, @Nullable Response response, @Nullable Exception e) {
+                super.onAfter(isFromCache, s, call, response, e);
+                ProgressUtil.hideLoading();
+            }
+        };
+        ProgressUtil.showLoading(getContext(),getString(R.string.loading));
+        HttpParams params = new HttpParams();
+        if(!MyNetTool.netHttpParams(getActivity(), URLs.findFilterListGroupByFilterType,callback,params)){
+            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
+                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    System.exit(0);
+                                    break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    netTabData();
+                                    break;
+                            }
+                        }
+                    }).show();
         }
 
     }
 
-    private void initViewPager() {
-        String[] resS = getResources().getStringArray(R.array.top_tab_list2);
-        titles = Arrays.asList(resS);
+    private void initTab() {
+        if(titles == null)
+            titles = new ArrayList<>();
+        else
+            titles.clear();
+        titles.add("ALL");
+            titles.add("FAVORITES");
+        int index = titles.size();
+        for(Filter filter : filterList){
+            titles.add(filter.getFilterName().toUpperCase());
+        }
+
         fragments = new ArrayList<>();
         for (int i = 0; i < titles.size(); i++) {
-            if (i == 0) {
-                fragments.add(new ShowRecipesFragment());
-            } else {
-                fragments.add(new ShowRecipesFragment());
+            if (titles.get(i).equals("ALL")) {
+                fragments.add(new ShowRecipesFragment(Constants.MAIN_INGREDIENT_ALL));
+            } else if(titles.get(i).equals("FAVORITES")){
+                fragments.add(new ShowRecipesFragment(Constants.MAIN_INGREDIENT_FAVORITES));
+            }else{
+                fragments.add(new ShowRecipesFragment(filterList.get(i-index).getFilterid()));
             }
         }
         viewPager.setOffscreenPageLimit(fragments.size());
-        myPagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), fragments, titles);
+        myPagerAdapter = new MyDyFragmentPagerAdapter(getChildFragmentManager(), fragments, titles);
         viewPager.setAdapter(myPagerAdapter);
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -188,7 +339,6 @@ public class TabRecFragment extends BaseFragment {
 
             @Override
             public void onPageSelected(int position) {
-                //title.setText(titles.get(position).replaceAll("@",""));
                 MainActivity.mainActivity.showBottom();
             }
 
@@ -198,14 +348,13 @@ public class TabRecFragment extends BaseFragment {
             }
         });
         // title.setText(titles.get(0).replaceAll("@",""));
-        title.setText("RECIPES");
-        initMagicIndicator();
 
+        initMagicIndicator();
     }
 
     private void initMagicIndicator() {
         tabLayout.setBackgroundColor(Color.parseColor("#080404"));
-        CommonNavigator commonNavigator = new CommonNavigator(getActivity());
+        commonNavigator = new CommonNavigator(getActivity());
         commonNavigator.setScrollPivotX(0.2f);
         commonNavigator.setAdapter(new CommonNavigatorAdapter() {
             @Override
@@ -237,12 +386,17 @@ public class TabRecFragment extends BaseFragment {
         });
         tabLayout.setNavigator(commonNavigator);
         ViewPagerHelper.bind(tabLayout, viewPager);
+        //showCollection(SharedPreferencesUtils.getSharedPreferencesUtil(getActivity()).getBoolean(Constants.ISLOGIN,false));
     }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        try {
+            getActivity().unregisterReceiver(updateUserStatusReceiver);
+        } catch (Exception e) {
+
+        }
     }
 
     void showInput(boolean show) {

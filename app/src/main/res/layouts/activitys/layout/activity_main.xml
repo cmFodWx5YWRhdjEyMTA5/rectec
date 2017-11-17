@@ -1,151 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
     <com.ym.traegergill.view.NoScrollViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
-    </com.ym.traegergill.view.NoScrollViewPager>
+        android:layout_height="match_parent"></com.ym.traegergill.view.NoScrollViewPager>
 
-  <android.support.design.widget.TabLayout
+    <android.support.design.widget.TabLayout
         android:id="@+id/tabLayout"
-      app:layout_behavior="@string/bye_burger_bottom_behavior"
         android:layout_width="match_parent"
-        android:layout_gravity="bottom"
-        android:layout_alignParentBottom="true"
-        android:background="@color/tab_bg_tran"
         android:layout_height="@dimen/default_bottom_tab_height"
-        app:tabSelectedTextColor="@color/orange"
-        app:tabIndicatorHeight="0dp"
-        app:tabTextColor="@color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:background="@color/tab_bg_tran"
+        app:layout_behavior="@string/bye_burger_bottom_behavior"
         app:tabGravity="fill"
-        app:tabMode="fixed"></android.support.design.widget.TabLayout>
+        app:tabIndicatorHeight="0dp"
+        app:tabMode="fixed"
+        app:tabSelectedTextColor="@color/orange"
+        app:tabTextColor="@color/white"></android.support.design.widget.TabLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/default_bottom_tab_height"
-        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
         android:background="@color/translucent"
-        android:layout_alignParentBottom="true"
-        >
+        android:orientation="horizontal">
+
         <TextView
-            android:layout_weight="1"
-            android:visibility="invisible"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:visibility="invisible" />
+
         <TextView
-            android:layout_weight="1"
-            android:visibility="invisible"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:visibility="invisible" />
+
         <TextView
             android:id="@+id/click"
-            android:clickable="true"
-            android:layout_weight="1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-        <TextView
-            android:layout_weight="1"
-            android:visibility="invisible"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-        <TextView
-            android:layout_weight="1"
-            android:visibility="invisible"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
-<!--
-    <RelativeLayout
-        android:id="@+id/rl_bottom"
-        android:background="@color/tab_bg_tran"
-        app:layout_behavior="@string/bye_burger_bottom_behavior"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_gravity="bottom"
-        android:orientation="vertical">
-        <LinearLayout
-            android:id="@+id/ll_bottomcontent"
-            android:layout_width="fill_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="bottom"
-            android:gravity="bottom"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:clickable="true" />
 
-            <RadioGroup
-                android:id="@+id/radiogroup"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:visibility="invisible" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:visibility="invisible" />
+    </LinearLayout>
+    <!--
+        <RelativeLayout
+            android:id="@+id/rl_bottom"
+            android:background="@color/tab_bg_tran"
+            app:layout_behavior="@string/bye_burger_bottom_behavior"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_gravity="bottom"
+            android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/ll_bottomcontent"
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="bottom"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="7dp"
-                android:paddingTop="9dp"
-                >
+                android:gravity="bottom"
+                android:orientation="horizontal">
 
-                <RadioButton
-                    android:id="@+id/rb_first"
-                    android:layout_width="match_parent"
+                <RadioGroup
+                    android:id="@+id/radiogroup"
+                    android:layout_width="fill_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.9"
-                    android:button="@null"
-                    android:drawableTop="@drawable/tab_traeger_icon"
-                    android:text="TRAEGERGILLS"
-                    android:gravity="center" />
+                    android:layout_gravity="bottom"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingBottom="7dp"
+                    android:paddingTop="9dp"
+                    >
 
-                <RadioButton
-                    android:id="@+id/rb_huodong"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:text="RECIPES"
-                    android:drawablePadding="5dp"
-                    android:drawableTop="@drawable/tab_recipes_icon"
-                    android:gravity="center" />
+                    <RadioButton
+                        android:id="@+id/rb_first"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.9"
+                        android:button="@null"
+                        android:drawableTop="@drawable/tab_traeger_icon"
+                        android:text="TRAEGERGILLS"
+                        android:gravity="center" />
 
-                <RadioButton
-                    android:id="@+id/rb_faxian"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:drawableTop="@drawable/tab_remote_icon"
-                    android:gravity="center" />
+                    <RadioButton
+                        android:id="@+id/rb_huodong"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:button="@null"
+                        android:text="RECIPES"
+                        android:drawablePadding="5dp"
+                        android:drawableTop="@drawable/tab_recipes_icon"
+                        android:gravity="center" />
 
-                <RadioButton
-                    android:id="@+id/rb_wode"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:drawableTop="@drawable/tab_shop_icon"
-                    />
-                <RadioButton
-                    android:id="@+id/rb_wode1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:drawableTop="@drawable/tab_my_icon"
-                    />
+                    <RadioButton
+                        android:id="@+id/rb_faxian"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:button="@null"
+                        android:drawableTop="@drawable/tab_remote_icon"
+                        android:gravity="center" />
 
-            </RadioGroup>
+                    <RadioButton
+                        android:id="@+id/rb_wode"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:drawableTop="@drawable/tab_shop_icon"
+                        />
+                    <RadioButton
+                        android:id="@+id/rb_wode1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:drawableTop="@drawable/tab_my_icon"
+                        />
+
+                </RadioGroup>
 
 
-        </LinearLayout>
+            </LinearLayout>
 
 
-    </RelativeLayout>
--->
+        </RelativeLayout>
+    -->
 
 </android.support.design.widget.CoordinatorLayout>

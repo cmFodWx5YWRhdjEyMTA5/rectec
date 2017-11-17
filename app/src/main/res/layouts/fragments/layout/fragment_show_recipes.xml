@@ -10,13 +10,62 @@
         android:id="@+id/pull_to_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <com.ym.traegergill.view.loadmore.RecyclerViewWithFooter
             android:id="@+id/rv_load_more"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fadingEdge="none"
-            android:overScrollMode="never"
-            >
-        </com.ym.traegergill.view.loadmore.RecyclerViewWithFooter>
+            android:overScrollMode="never"></com.ym.traegergill.view.loadmore.RecyclerViewWithFooter>
     </com.yalantis.phoenix.PullToRefreshView>
+
+    <LinearLayout
+        android:id="@+id/cover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:clickable="true"
+        android:orientation="vertical"
+        android:translationZ="9dp"
+        android:visibility="gone">
+
+        <com.ym.traegergill.view.ElasticityScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="150dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/sign_in"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:background="@drawable/enable_btn_corners_bg"
+                    android:gravity="center"
+                    android:text="@string/SIGN_IN"
+                    android:textColor="@color/white"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/create_account"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:background="@drawable/orange_btn_corners_bg"
+                    android:gravity="center"
+                    android:text="@string/CREATE_ACCOUNT"
+                    android:textColor="@color/white"
+                    android:textSize="17sp" />
+            </LinearLayout>
+        </com.ym.traegergill.view.ElasticityScrollView>
+    </LinearLayout>
+
 </RelativeLayout>

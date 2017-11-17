@@ -90,7 +90,7 @@ public class TempCalibrationActivity extends BaseActivity {
                 enableViews(false);
                 JSONObject jsonObject = JSONObject.parseObject(dpStr);
                 for (Map.Entry<String, Object> entry : jsonObject.entrySet()) {
-                    if (entry.getKey().equals("104")) {
+                    if (entry.getKey().equals("107")) {
                         int temp = Integer.parseInt(entry.getValue().toString());
                         percent.setText(temp + "");
                     }
@@ -100,17 +100,21 @@ public class TempCalibrationActivity extends BaseActivity {
 
             @Override
             public void onRemoved(String s) {
-                DialogUtil.simpleSmartDialog(getActivity(), "设备被移除了", null);
+                DialogUtil.simpleSmartDialog(getActivity(), getString(R.string.device_has_unbinded), null);
             }
 
             @Override
             public void onStatusChanged(String s, boolean b) {
-                DialogUtil.simpleSmartDialog(getActivity(), "设备离线了", null);
+                if(!b){
+                    DialogUtil.simpleSmartDialog(getActivity(), getString(R.string.device_offLine), null);
+                }
+
             }
 
             @Override
             public void onNetworkStatusChanged(String s, boolean b) {
-                //DialogUtil.simpleSmartDialog(getActivity(), "网络异常", null);
+                if(b == false)
+                    DialogUtil.simpleSmartDialog(getActivity(), getString(R.string.network_error), null);
             }
 
             @Override
@@ -131,14 +135,42 @@ public class TempCalibrationActivity extends BaseActivity {
         public boolean onTouch(View view, MotionEvent motionEvent) {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 updateAddOrSubtract(view.getId());    //手指按下时触发不停的发送消息
+                switch (view.getId()) {
+                    case R.id.iv_add:
+                        ivAdd.setImageResource(R.drawable.icon_add_pre);
+                        break;
+                    case R.id.iv_less:
+                        ivLess.setImageResource(R.drawable.icon_less_pre);
+                        break;
+
+                }
             } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                 stopAddOrSubtract();    //手指抬起时停止发送
+                switch (view.getId()) {
+                    case R.id.iv_add:
+                        ivAdd.setImageResource(R.drawable.icon_add);
+                        break;
+                    case R.id.iv_less:
+                        ivLess.setImageResource(R.drawable.icon_less);
+                        break;
+
+                }
             } else if (motionEvent.getAction() == MotionEvent.ACTION_CANCEL) {
                 stopAddOrSubtract();    //手指抬起时停止发送
+                switch (view.getId()) {
+                    case R.id.iv_add:
+                        ivAdd.setImageResource(R.drawable.icon_add);
+                        break;
+                    case R.id.iv_less:
+                        ivLess.setImageResource(R.drawable.icon_less);
+                        break;
+
+                }
             }
             return true;
         }
     };
+
 
     private ScheduledExecutorService scheduledExecutor;
 
@@ -168,7 +200,7 @@ public class TempCalibrationActivity extends BaseActivity {
                     if (now <= -21) {
                         return;
                     }
-                    percent.setText(now+"");
+                    percent.setText(now + "");
                     break;
                 case R.id.iv_add:
                     now = Integer.parseInt(percent.getText().toString()) + 1;
@@ -236,4 +268,13 @@ public class TempCalibrationActivity extends BaseActivity {
             enableViews(true);
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mTuyaDevice != null) {
+            mTuyaDevice.unRegisterDevListener();
+            mTuyaDevice.onDestroy();
+        }
+    }
 }

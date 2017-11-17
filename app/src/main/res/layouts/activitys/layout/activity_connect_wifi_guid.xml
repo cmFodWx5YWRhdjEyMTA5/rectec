@@ -98,6 +98,7 @@
             android:layout_marginBottom="15dp"
             android:background="@drawable/white_btn_corners_bg"
             android:gravity="center"
+            android:visibility="gone"
             android:text="@string/PURCHASE_PRODUCTS"
             android:singleLine="true"
             android:textColor="@color/orange"

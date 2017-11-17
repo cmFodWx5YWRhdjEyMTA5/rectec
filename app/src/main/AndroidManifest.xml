@@ -42,21 +42,35 @@
         <service android:name="org.eclipse.paho.android.service.MqttService"/>
 
         <activity
-            android:name=".activity.MainActivity"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustPan">
+            android:name=".activity.AppStartActivity"
+            >
             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+                 <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activity.MainActivity"
+            android:windowSoftInputMode="adjustPan">
+           <!-- <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
         <activity
             android:name=".activity.ItemsDetailActivity"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.ym.traegergill"
+            android:excludeFromRecents="true"
             android:theme="@style/AppFullTheme" />
         <activity android:name=".activity.FilterActivity" />
         <activity
             android:name=".activity.RecipesDetailActivity"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.ym.traegergill"
+            android:excludeFromRecents="true"
             android:theme="@style/AppFullTheme" />
         <activity
             android:name=".activity.CreateAccountActivity"
@@ -78,6 +92,9 @@
         <activity android:name=".activity.DevicesActivity" />
         <activity
             android:name=".activity.RemoteControlActivity"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.ym.traegergill"
+            android:excludeFromRecents="true"
             android:theme="@style/AppWhiteTheme" />
         <activity android:name=".activity.SettingGrillActivity" />
         <activity android:name=".activity.AlarmsActivity" />
@@ -86,14 +103,21 @@
         <activity android:name=".activity.CountryListActivity" />
         <activity android:name=".activity.AddDeviceSuccessActivity" />
         <activity android:name=".activity.AddDeviceErrorActivity" />
-        <activity android:name=".activity.TempChartActivity" />
-
+        <activity android:name=".activity.TempChartActivity"
+            android:theme="@style/AppWhiteTheme"
+            />
+        <activity android:name=".activity.FilterRecipesActivity" />
+        <activity android:name=".activity.RecipesSearchActivity"
+            android:theme="@style/Transparent"
+            android:windowSoftInputMode="stateVisible"
+            />
 
         <activity
             android:name=".activity.ForgetPswActivity"
             android:theme="@style/AppFullTheme"
             android:windowSoftInputMode="adjustUnspecified|stateUnspecified" />
 
+        <activity android:name=".activity.BrowserActivity" />
         <receiver android:name="com.ym.traegergill.broadcast.WifiBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
@@ -105,7 +129,6 @@
             android:name="com.ym.traegergill.service.TraegerGillService"
             android:exported="true">
         </service>
-
         <receiver android:name="com.tuya.smart.android.base.broadcast.NetworkBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />

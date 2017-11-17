@@ -1,8 +1,10 @@
 package com.ym.traegergill.fragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -11,11 +13,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.lzy.okhttputils.callback.StringCallback;
+import com.lzy.okhttputils.model.HttpParams;
 import com.ym.traegergill.R;
 import com.ym.traegergill.activity.MainActivity;
-import com.ym.traegergill.adapter.MyFragmentPagerAdapter;
-import com.ym.traegergill.tools.Constants;
-import com.ym.traegergill.tools.SharedPreferencesUtils;
+import com.ym.traegergill.adapter.PlatformFragmentPagerAdapter;
+import com.ym.traegergill.modelBean.SharePlatform;
+import com.ym.traegergill.net.URLs;
+import com.ym.traegergill.tools.MyNetTool;
+import com.ym.traegergill.tools.OUtil;
+import com.ym.traegergill.tuya.utils.DialogUtil;
+import com.ym.traegergill.tuya.utils.ProgressUtil;
 
 import net.lucode.hackware.magicindicator.MagicIndicator;
 import net.lucode.hackware.magicindicator.ViewPagerHelper;
@@ -26,13 +34,19 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTit
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.TriangularPagerIndicator;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.SimplePagerTitleView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import okhttp3.Call;
+import okhttp3.Request;
+import okhttp3.Response;
 
 
 /**
@@ -50,30 +64,97 @@ public class TabTraFragment extends BaseFragment {
     @BindView(R.id.title)
     TextView title;
 
-    List<String> titles;
+    List<SharePlatform> titles;
     List<Fragment> fragments;
-    private MyFragmentPagerAdapter myPagerAdapter;
+    private PlatformFragmentPagerAdapter myPagerAdapter;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_tab_tra, container, false);
         unbinder = ButterKnife.bind(this, view);
-
-        initViewPager();
+        initTitle();
         return view;
     }
 
-    private void initViewPager() {
-        String[] resS = getResources().getStringArray(R.array.top_tab_list);
-        titles = Arrays.asList(resS);
+    private void initTitle() {
+        title.setText("RECTECGILLS");
+        titles = new ArrayList<>();
+        if(OUtil.isNetworkConnected(getActivity())){
+            netTitle();
+        }else{
+            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
+                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    System.exit(0);
+                                    break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    initTitle();
+                                    break;
+                            }
+                        }
+                    }).show();
+        }
+    }
+    private void netTitle() {
+        ProgressUtil.showLoading(getActivity(),getString(R.string.loading));
+        HttpParams params = new HttpParams();
+        StringCallback callback = new StringCallback() {
+            @Override
+            public void onResponse(boolean isFromCache, String s, Request request, @Nullable Response response) {
+                TLog("isFromCache : "+isFromCache+" json : " + s);
+                try {
+                    JSONObject obj = new JSONObject(s);
+                    if(obj.optInt("code")==200){
+                        JSONArray array = obj.optJSONArray("content");
+                        for(int i = 0;i<array.length();i++){
+                            SharePlatform share = new SharePlatform();
+                            share.setSharePlatformid(array.optJSONObject(i).optInt("sharePlatformid"));
+                            share.setName(array.optJSONObject(i).optString("name").toUpperCase());
+                            titles.add(share);
+                        }
+                        setViewPager();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onAfter(boolean isFromCache, @Nullable String s, Call call, @Nullable Response response, @Nullable Exception e) {
+                super.onAfter(isFromCache, s, call, response, e);
+                ProgressUtil.hideLoading();
+            }
+        };
+
+        if(!MyNetTool.netHttpParams(getActivity(),URLs.findSharePlatformAll,callback,params)){
+            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
+                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    System.exit(0);
+                                    break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    netTitle();
+                                    break;
+                            }
+                        }
+                    }).show();
+        }
+
+    }
+    private void setViewPager(){
         fragments = new ArrayList<>();
         for (int i = 0; i < titles.size(); i++) {
-            fragments.add(new ShowItemsFragment2());
-
+            fragments.add(new ShowItemsFragment(titles.get(i).getSharePlatformid()));
         }
         viewPager.setOffscreenPageLimit(fragments.size());
-        myPagerAdapter = new MyFragmentPagerAdapter(getChildFragmentManager(), fragments, titles);
+        myPagerAdapter = new PlatformFragmentPagerAdapter(getChildFragmentManager(), fragments, titles);
         viewPager.setAdapter(myPagerAdapter);
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -93,11 +174,8 @@ public class TabTraFragment extends BaseFragment {
             }
         });
         //title.setText(titles.get(0).replaceAll("@",""));
-        title.setText("TRAEGERGILLS");
         initMagicIndicator();
-
     }
-
     private void initMagicIndicator() {
         tabLayout.setBackgroundColor(Color.parseColor("#080404"));
         CommonNavigator commonNavigator = new CommonNavigator(getActivity());
@@ -107,10 +185,11 @@ public class TabTraFragment extends BaseFragment {
             public int getCount() {
                 return titles == null ? 0 : titles.size();
             }
+
             @Override
             public IPagerTitleView getTitleView(Context context, final int index) {
                 SimplePagerTitleView simplePagerTitleView = new SimplePagerTitleView(context);
-                simplePagerTitleView.setText(titles.get(index));
+                simplePagerTitleView.setText(titles.get(index).getName());
                 simplePagerTitleView.setNormalColor(Color.parseColor("#999999"));
                 simplePagerTitleView.setSelectedColor(Color.parseColor("#dc5f27"));
                 simplePagerTitleView.setOnClickListener(new View.OnClickListener() {
@@ -132,6 +211,7 @@ public class TabTraFragment extends BaseFragment {
         tabLayout.setNavigator(commonNavigator);
         ViewPagerHelper.bind(tabLayout, viewPager);
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

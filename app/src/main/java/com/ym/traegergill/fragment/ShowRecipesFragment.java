@@ -1,91 +1,179 @@
 package com.ym.traegergill.fragment;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.OvershootInterpolator;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.lzy.okhttputils.callback.StringCallback;
+import com.lzy.okhttputils.model.HttpParams;
+import com.tuya.smart.sdk.TuyaUser;
 import com.yalantis.phoenix.PullToRefreshView;
 import com.ym.traegergill.R;
-import com.ym.traegergill.activity.ItemsDetailActivity;
+import com.ym.traegergill.activity.CreateAccountActivity;
 import com.ym.traegergill.activity.RecipesDetailActivity;
+import com.ym.traegergill.activity.SignInActivity;
 import com.ym.traegergill.adapter.ShowRecipesRvAdapter;
-import com.ym.traegergill.bean.PhotoBean;
-import com.ym.traegergill.bean.RecipesBean;
+import com.ym.traegergill.broadcast.TraegerGillBroadcastHelper;
+import com.ym.traegergill.modelBean.Recipe;
+import com.ym.traegergill.net.URLs;
+import com.ym.traegergill.tools.Constants;
+import com.ym.traegergill.tools.MyNetTool;
 import com.ym.traegergill.tools.OUtil;
-import com.ym.traegergill.view.LoadingView;
+import com.ym.traegergill.tools.SharedPreferencesUtils;
+import com.ym.traegergill.tuya.utils.DialogUtil;
+import com.ym.traegergill.tuya.utils.ProgressUtil;
 import com.ym.traegergill.view.loadmore.DefaultFootItem;
 import com.ym.traegergill.view.loadmore.OnLoadMoreListener;
 import com.ym.traegergill.view.loadmore.RecyclerViewWithFooter;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
+import okhttp3.Call;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by Administrator on 2017/9/18.
  */
 
+@SuppressLint("ValidFragment")
 public class ShowRecipesFragment extends BaseFragment {
     @BindView(R.id.rv_load_more)
     RecyclerViewWithFooter rvLoadMore;
     @BindView(R.id.pull_to_refresh)
     PullToRefreshView pullToRefresh;
     Unbinder unbinder;
-    private LoadingView loading;
-    private static final AccelerateInterpolator ACCELERATE_INTERPOLATOR = new AccelerateInterpolator();
-    private static final OvershootInterpolator OVERSHOOT_INTERPOLATOR = new OvershootInterpolator(4);
-    String[] imgs;
-    List<RecipesBean> mData;
+    List<Recipe> mData;
     ShowRecipesRvAdapter adapter;
-    int count = 0;
+    int page = 0;
+    int maxPage = 1;
+    Gson gson;
+    SharedPreferencesUtils spUtils;
+    public int filterid;
+    @BindView(R.id.sign_in)
+    TextView signIn;
+    @BindView(R.id.create_account)
+    TextView createAccount;
+    @BindView(R.id.cover)
+    LinearLayout cover;
+
+    public ShowRecipesFragment(int filterid) {
+        this.filterid = filterid;
+    }
+
+    private UpdateUserStatusReceiver updateUserStatusReceiver;
+
+    @OnClick({R.id.sign_in, R.id.create_account})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.sign_in:
+                startActivity(new Intent(getActivity(), SignInActivity.class));
+                getActivity().overridePendingTransition(R.anim.slide_bottom_to_top, R.anim.slide_none_medium_time);
+                break;
+            case R.id.create_account:
+                startActivity(new Intent(getActivity(), CreateAccountActivity.class));
+                getActivity().overridePendingTransition(R.anim.slide_bottom_to_top, R.anim.slide_none_medium_time);
+                break;
+        }
+    }
+
+    class UpdateUserStatusReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(TraegerGillBroadcastHelper.ACTION_UPDATE_USERSTATUS)) {
+                if (filterid == Constants.MAIN_INGREDIENT_FAVORITES) {
+                    showCollection(spUtils.getBoolean(Constants.ISLOGIN, false));
+                }
+            }
+        }
+    }
+
+    private void showCollection(boolean isLogin) {
+        if (isLogin) {
+            cover.setVisibility(View.GONE);
+        } else {
+            cover.setVisibility(View.VISIBLE);
+        }
+        showData(isLogin);
+    }
+
+    private void showData(boolean flag) {
+        if (flag) {
+            page = 0;
+            initData(false);
+            rvLoadMore.setLoading();
+        } else {
+            mData.clear();
+            rvLoadMore.setEnd("");
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_show_recipes, container, false);
-        imgs = getResources().getStringArray(R.array.user_photos);
         unbinder = ButterKnife.bind(this, view);
+        spUtils = SharedPreferencesUtils.getSharedPreferencesUtil(getActivity());
         return view;
     }
 
-    /**
-     * 在fragment首次可见时回调，可在这里进行加载数据，保证只在第一次打开Fragment时才会加载数据，
-     * 这样就可以防止每次进入都重复加载数据
-     * 该方法会在 onFragmentVisibleChange() 之前调用，所以第一次打开时，可以用一个全局变量表示数据下载状态，
-     * 然后在该方法内将状态设置为下载状态，接着去执行下载的任务
-     * 最后在 onFragmentVisibleChange() 里根据数据下载状态来控制下载进度ui控件的显示与隐藏
-     */
+
     @Override
     protected void onFragmentFirstVisible() {
         super.onFragmentFirstVisible();
-        loading = new LoadingView(getActivity(), R.style.CustomDialog);
-        loading.show();
-        new Handler().postDelayed(new Runnable() {//定义延时任务模仿网络请求
-            @Override
-            public void run() {
-                loading.dismiss();//3秒后调用关闭加载的方法
-
-            }
-        }, 300);
+        TLog("filterid :" + filterid);
+        gson = new Gson();
         initRecycler();
+        //注册广播
+        if (filterid == Constants.MAIN_INGREDIENT_FAVORITES) {
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(TraegerGillBroadcastHelper.ACTION_UPDATE_USERSTATUS);
+            updateUserStatusReceiver = new UpdateUserStatusReceiver();
+            getActivity().registerReceiver(updateUserStatusReceiver, intentFilter);
+        }
+
+        if (!spUtils.getBoolean(Constants.ISLOGIN, false) && filterid == Constants.MAIN_INGREDIENT_FAVORITES) {
+            showCollection(false);
+        } else {
+            showCollection(true);
+            ProgressUtil.showLoading(getActivity(), getString(R.string.loading));
+            new Handler().postDelayed(new Runnable() {//定义延时任务模仿网络请求
+                @Override
+                public void run() {
+                    //loading.dismiss();//3秒后调用关闭加载的方法
+                    ProgressUtil.hideLoading();
+                }
+            }, 1000);
+        }
+
     }
 
     private void initRecycler() {
@@ -95,102 +183,154 @@ public class ShowRecipesFragment extends BaseFragment {
                 pullToRefresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        refreshData();
+                        page = 0;
+                        rvLoadMore.setLoading();
+                        initData(false);
                         pullToRefresh.setRefreshing(false);
                     }
                 }, 1000);
             }
         });
         mData = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            RecipesBean bean = new RecipesBean();
-            bean.setImageUrl(getURL());
-            bean.setIngredientNum(i+10);
-            bean.setTime(i*0.5+1);
-            bean.setDesInImg("\"It was delicious,\" the players said.");
-            bean.setDesc("To express gratitude, the farmer recently made a sausage from the pig, which was raised, and gave the firefighters a BBQ. ");
-            mData.add(bean);
-        }
         rvLoadMore.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new ShowRecipesRvAdapter(getActivity(), mData);
-
         adapter.setOnMyItemClickListener(new ShowRecipesRvAdapter.OnMyItemClickListener() {
             @Override
             public void onNormalClick(View v, int position) {
                 getActivity().startActivity(
-                        new Intent(getActivity(), RecipesDetailActivity.class).putExtra("data",mData.get(position).getImageUrl()),
+                        new Intent(getActivity(), RecipesDetailActivity.class).putExtra("recipeid", mData.get(position).getRecipeid()),
                         ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                (Activity)getActivity(),
+                                (Activity) getActivity(),
                                 Pair.create(v.findViewById(R.id.img), getActivity().getString(R.string.iv_img_transitionName))
                         ).toBundle()
                 );
             }
         });
         rvLoadMore.setAdapter(adapter);
-//        mRecyclerViewWithFooter.setStaggeredGridLayoutManager(2);
         rvLoadMore.setFootItem(new DefaultFootItem());//默认是这种
-//        mRecyclerViewWithFooter.setFootItem(new CustomFootItem());//自定义
         rvLoadMore.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
                 rvLoadMore.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        addData();
+                        initData(true);
                     }
                 }, 1000);
             }
         });
     }
 
-
-    protected void addData() {
-        count++;
-        if(count == 4){
-            rvLoadMore.setEnd("没有更多数据了");
+    private void initData(final boolean isMore) {
+        if (!isMore) {
+            ProgressUtil.showLoading(getActivity(), getString(R.string.loading));
+            new Handler().postDelayed(new Runnable() {//定义延时任务模仿网络请求
+                @Override
+                public void run() {
+                    ProgressUtil.hideLoading();
+                }
+            }, 1000);
         }
-        for (int i = 0; i < 10; i++) {
-            RecipesBean bean = new RecipesBean();
-            bean.setImageUrl(getURL());
-            bean.setIngredientNum(i+10);
-            bean.setTime(i*0.5+1);
-            bean.setDesInImg("\"It was delicious,\" the players said.");
-            bean.setDesc("To express gratitude, the farmer recently made a sausage from the pig, which was raised, and gave the firefighters a BBQ. ");
-            mData.add(bean);
+        StringCallback callback = new StringCallback() {
+            @Override
+            public void onResponse(boolean isFromCache, String s, Request request, @Nullable Response response) {
+                TLog("isFromCache : " + isFromCache + " json : " + s);
+                try {
+                    JSONObject obj = new JSONObject(s);
+                    if (obj.optInt("code") == 200) {
+                        JSONObject content = obj.optJSONObject("content");
+                        page = content.optInt("page");
+                        maxPage = content.optInt("maxPage");
+                        JSONArray array = content.optJSONArray("data");
+                        List<Recipe> beans = new ArrayList<Recipe>();
+                        if (array != null) {
+                            for (int i = 0; i < array.length(); i++) {
+                                Recipe recipe = gson.fromJson(array.optJSONObject(i).toString(), Recipe.class);
+                                beans.add(recipe);
+                            }
+                        }
+                        if (!isMore) {
+                            mData.clear();
+                        }
+                        mData.addAll(beans);
+                        if (array == null || array.length() == 0 || page == maxPage) {
+                            rvLoadMore.setEnd(getResources().getString(R.string.rv_with_footer_empty));
+                        }
+                        if (rvLoadMore != null && rvLoadMore.getAdapter() != null)
+                            rvLoadMore.getAdapter().notifyDataSetChanged();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(boolean isFromCache, Call call, @Nullable Response response, @Nullable Exception e) {
+                super.onError(isFromCache, call, response, e);
+                OUtil.TLog("isFromCache : " + isFromCache + " Exception : " + gson.toJson(e));
+            }
+        };
+        HttpParams params = new HttpParams();
+        params.put("page", (page + 1) + "");
+        String url = "";
+        if (filterid == Constants.MAIN_INGREDIENT_ALL) {
+            url = URLs.findRecipeAll;
+        } else if (filterid == Constants.MAIN_INGREDIENT_FAVORITES) {
+            url = URLs.findUserRecipeCollection;
+        } else {
+            url = URLs.findRecipesInCondition;
+            List<HashMap<String, Integer>> filteridList = new ArrayList<>();
+            HashMap map = new HashMap<String, Integer>();
+            map.put("filterid", filterid);
+            filteridList.add(map);
+            String recipeFilterListStr = gson.toJson(filteridList);
+            params.put("recipeFilterListStr", recipeFilterListStr);
         }
-        rvLoadMore.getAdapter().notifyDataSetChanged();
-    }
-
-    protected void refreshData() {
-        count = 0;
-        mData.clear();
-        for (int i = 0; i < 10; i++) {
-            RecipesBean bean = new RecipesBean();
-            bean.setImageUrl(getURL());
-            bean.setIngredientNum(i+10);
-            bean.setTime(i*0.5+1);
-            bean.setDesInImg("\"It was delicious,\" the players said.");
-            bean.setDesc("To express gratitude, the farmer recently made a sausage from the pig, which was raised, and gave the firefighters a BBQ. ");
-            mData.add(bean);
+        if (filterid != Constants.MAIN_INGREDIENT_FAVORITES && !MyNetTool.netHttpParams(getActivity(), url, callback, params)) {
+            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
+                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    System.exit(0);
+                                    break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    initData(isMore);
+                                    break;
+                            }
+                        }
+                    }).show();
+        } else if (filterid == Constants.MAIN_INGREDIENT_FAVORITES) {
+            if (!MyNetTool.netCross(getActivity(), TuyaUser.getUserInstance().getUser().getUid(), url, callback)) {
+                DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
+                        , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which) {
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        System.exit(0);
+                                        break;
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        initData(isMore);
+                                        break;
+                                }
+                            }
+                        }).show();
+            }
         }
-        rvLoadMore.getAdapter().notifyDataSetChanged();
+
     }
 
-    String getURL() {
-        Random random = new Random();
-        String url = imgs[random.nextInt(imgs.length) % imgs.length];
-        return url;
-    }
-
-    String getURL(int index) {
-       /* index = (index/(20/imgs.length));
-        String url = imgs[index%imgs.length];*/
-        return getURL();
-    }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        try {
+            getActivity().unregisterReceiver(updateUserStatusReceiver);
+        } catch (Exception e) {
+
+        }
     }
 }

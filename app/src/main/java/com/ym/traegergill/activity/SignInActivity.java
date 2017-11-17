@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.tuya.smart.android.user.api.ILoginCallback;
 import com.tuya.smart.android.user.bean.User;
 import com.tuya.smart.sdk.TuyaSdk;
@@ -29,6 +30,7 @@ import com.ym.traegergill.tools.OUtil;
 import com.ym.traegergill.tools.RegularUtils;
 import com.ym.traegergill.tools.SharedPreferencesUtils;
 import com.ym.traegergill.tuya.utils.ProgressUtil;
+
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -91,6 +93,9 @@ public class SignInActivity extends BaseActivity {
     private void initInfo() {
         etEmail.setText(spUtils.getString(Constants.EMAIL,""));
         etEmail.setSelection(etEmail.getText().toString().length());
+        if(!TextUtils.isEmpty(etEmail.getText().toString())){
+            etPassword.requestFocus();
+        }
         // 初始化国家/地区信息
         String countryKey = CountryUtils.getCountryKey(TuyaSdk.getApplication());
         if (!TextUtils.isEmpty(countryKey)) {
@@ -120,7 +125,7 @@ public class SignInActivity extends BaseActivity {
     void checkInPutAndUpDateUI() {
         String emailVal = etEmail.getText().toString();
         String passwordVal = etPassword.getText().toString();
-        if (!TextUtils.isEmpty(emailVal) && passwordVal.length() > 3) {
+        if (!TextUtils.isEmpty(emailVal) && !TextUtils.isEmpty(passwordVal)) {
             signIn.setEnabled(true);
             return;
         }
@@ -164,13 +169,15 @@ public class SignInActivity extends BaseActivity {
                     new ILoginCallback() {
                         @Override
                         public void onSuccess(User user) {
+                            OUtil.TLog("login user   : " + new Gson().toJson(user));
+                            ProgressUtil.hideLoading();
                             ProgressUtil.hideLoading();
                             spUtils.setValue(Constants.ISLOGIN, true);
                             spUtils.setValue(Constants.EMAIL,user.getEmail());
                             Intent intent = new Intent(TraegerGillBroadcastHelper.ACTION_UPDATE_USERSTATUS);
                             getApplicationContext().sendBroadcast(intent);
-                            OUtil.TLog("onSuccess");
-                            OUtil.toastSuccess(getActivity(),"onSuccess");
+                            OUtil.TLog("login success");
+                            //OUtil.toastSuccess(getActivity(),"success");
                             getActivity().finish();
                         }
 
@@ -182,33 +189,9 @@ public class SignInActivity extends BaseActivity {
                         }
                     });
         }else{
-            TuyaUser.getUserInstance().loginWithPhonePassword(mCountryCode,
-                    etEmail.getText().toString(),
-                    etPassword.getText().toString(),
-                    new ILoginCallback() {
-                        @Override
-                        public void onSuccess(User user) {
-                            ProgressUtil.hideLoading();
-                            spUtils.setValue(Constants.ISLOGIN, true);
-                            spUtils.setValue(Constants.EMAIL,user.getEmail());
-                            Intent intent = new Intent(TraegerGillBroadcastHelper.ACTION_UPDATE_USERSTATUS);
-                            getApplicationContext().sendBroadcast(intent);
-                            OUtil.TLog("onSuccess");
-                            OUtil.toastSuccess(getActivity(),"onSuccess");
-                            getActivity().finish();
-                        }
+            showToastError("email error!");
 
-                        @Override
-                        public void onError(String s, String s1) {
-                            ProgressUtil.hideLoading();
-                            OUtil.TLog(s1);
-                            OUtil.toastError(getActivity(),s1);
-                        }
-                    });
         }
-
-
-
     }
 
 

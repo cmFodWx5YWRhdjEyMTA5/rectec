@@ -24,6 +24,15 @@
         <item name="colorPrimary">@color/white</item>
         <item name="colorPrimaryDark">@color/white</item>
     </style>
+    <style name="Transparent" parent="@style/BaseAppTheme">
+        <item name="android:windowBackground">
+            @color/translucent
+        </item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+
+    </style>
+
     <!--LoadingView-->
     <style name="CustomDialog" parent="Theme.AppCompat.Dialog">
         <item name="android:backgroundDimEnabled">false</item>

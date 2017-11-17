@@ -6,12 +6,15 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.lzy.okhttputils.OkHttpUtils;
 import com.tencent.smtt.sdk.QbSdk;
 import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.api.INeedLoginListener;
+import com.uuch.adlibrary.utils.DisplayUtil;
 import com.ym.traegergill.activity.SignInActivity;
 import com.ym.traegergill.db.SQLiteDbUtil;
 import com.ym.traegergill.tools.ApplicationInfoUtil;
@@ -48,26 +51,16 @@ public class App extends Application{
         }
         //OkHttpUtils初始化
         OkHttpUtils.init(this);
-        //初始化X5内核
-        QbSdk.initX5Environment(this, new QbSdk.PreInitCallback() {
-            @Override
-            public void onCoreInitFinished() {
-                //x5内核初始化完成回调接口，此接口回调并表示已经加载起来了x5，有可能特殊情况下x5内核加载失败，切换到系统内核。
-                Log.i("oyxTest App","x5内核初始化完成回调接口，此接口回调并表示已经加载起来了x5，有可能特殊情况下x5内核加载失败，切换到系统内核。");
-            }
-
-            @Override
-            public void onViewInitFinished(boolean b) {
-                //x5內核初始化完成的回调，为true表示x5内核加载成功，否则表示x5内核加载失败，会自动切换到系统内核。
-                Log.i("oyxTest App","加载内核是否成功:"+b);
-            }
-        });
 
         if (isInitAppkey()) {
             initSdk();
         }
         //http://blog.csdn.net/linglongxin24/article/details/53385868
         SQLiteDbUtil.getSQLiteDbUtil().openOrCreateDataBase(this);
+
+        initDisplayOpinion();
+
+        Fresco.initialize(this);
     }
     private void initSdk() {
         Log.i("oyxTest App","==== initSdk ====");
@@ -83,8 +76,17 @@ public class App extends Application{
             }
         });
         TuyaSdk.setDebugMode(true);
-    }
 
+    }
+    private void initDisplayOpinion() {
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        DisplayUtil.density = dm.density;
+        DisplayUtil.densityDPI = dm.densityDpi;
+        DisplayUtil.screenWidthPx = dm.widthPixels;
+        DisplayUtil.screenhightPx = dm.heightPixels;
+        DisplayUtil.screenWidthDip = DisplayUtil.px2dip(getApplicationContext(), dm.widthPixels);
+        DisplayUtil.screenHightDip = DisplayUtil.px2dip(getApplicationContext(), dm.heightPixels);
+    }
     private boolean isInitAppkey() {
         String appkey = ApplicationInfoUtil.getInfo("TUYA_SMART_APPKEY", this);
         String appSecret = ApplicationInfoUtil.getInfo("TUYA_SMART_SECRET", this);
@@ -94,6 +96,5 @@ public class App extends Application{
         }
         return true;
     }
-
 
 }

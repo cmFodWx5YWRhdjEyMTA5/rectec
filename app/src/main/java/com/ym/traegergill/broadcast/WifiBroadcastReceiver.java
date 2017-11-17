@@ -3,12 +3,16 @@ package com.ym.traegergill.broadcast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Bundle;
 import android.util.Log;
 
-import com.ym.traegergill.fragment.BaseFragment;
+import com.tuya.smart.android.base.event.BaseEventSender;
+import com.tuya.smart.android.common.utils.L;
+import com.tuya.smart.android.common.utils.NetworkUtil;
+import com.ym.traegergill.activity.BaseActivity;
+import com.ym.traegergill.tools.NetUtil;
 
 /**
  * Created by Administrator on 2017/9/29.
@@ -18,6 +22,7 @@ public class WifiBroadcastReceiver  extends BroadcastReceiver {
     private static final String TAG = WifiBroadcastReceiver.class.getSimpleName();
     @Override
     public void onReceive(Context context, Intent intent) {
+
         WifiInfo info = ((WifiManager)context.getSystemService(context.WIFI_SERVICE)).getConnectionInfo();
         //mIconWifi.setImageLevel(Math.abs(info.getRssi()));
         /*
@@ -71,11 +76,13 @@ public class WifiBroadcastReceiver  extends BroadcastReceiver {
                 Log.i(TAG, "WIFI STATUS : WIFI_STATE_UNKNOWN");
 
                 break;
-
-
         }
 
-    }
 
+    }
+    // 自定义接口
+    public interface NetEvevt {
+        public void onNetChange(int netMobile);
+    }
 }
 

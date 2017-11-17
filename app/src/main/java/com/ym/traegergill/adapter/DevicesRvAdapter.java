@@ -76,7 +76,7 @@ public class DevicesRvAdapter extends RecyclerView.Adapter<DevicesRvAdapter.MyVi
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    OUtil.toastError(mContext,"设备是离线状态");
+                    OUtil.toastError(mContext,mContext.getString(R.string.ty_offline_title));
                     OUtil.TLog("设备是离线状态");
                 }
             });

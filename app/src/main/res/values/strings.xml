@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Traegergill</string>
+    <string name="app_name">Rectec</string>
 <!--
     <string-array name="user_photos">
         <item>http://img5q.duitang.com/uploads/item/201312/05/20131205172421_QKF4K.jpeg</item>
@@ -8,7 +8,8 @@
         <item>http://img4.duitang.com/uploads/item/201312/05/20131205171937_kNM3u.jpeg</item>
         <item>http://img5.duitang.com/uploads/item/201312/05/20131205172409_euCc2.jpeg</item>
         <item>http://img4q.duitang.com/uploads/item/201304/27/20130427043538_wAfHC.jpeg</item>
-    </string-array>-->
+    </string-array>
+-->
 
    <string-array name="user_photos">
         <item>https://timgsa.baidu.com/timg?image\quality=80&#038;size=b9999_10000&#038;sec=1505912275143&#038;di=374525fbe4de54afa68e3034323007d7&#038;imgtype=0&#038;src=http%3A%2F%2Fimg1.juimg.com%2F141120%2F330773-141120135K830.jpg</item>
@@ -18,16 +19,17 @@
         <item>https://timgsa.baidu.com/timg?image&#038;quality=80&#038;size=b9999_10000&#038;sec=1506507084&#038;di=89ad5b7c248722e54858a045b2b70c58&#038;imgtype=jpg&#038;er=1&#038;src=http%3A%2F%2Fimgsrc.baidu.com%2Fimgad%2Fpic%2Fitem%2F95eef01f3a292df5e9d31d01b6315c6034a87395.jpg</item>
         <item>https://timgsa.baidu.com/timg?image&#038;quality=80&#038;size=b9999_10000&#038;sec=1505912389989&#038;di=d3a7a284821530e3b16762c93b6a7595&#038;imgtype=0&#038;src=http%3A%2F%2Fimg1.qunarzz.com%2Ftravel%2Fd0%2F1512%2Fac%2F5d4bdab81d3f3cf7.jpg_r_640x380x70_041bf233.jpg</item>
     </string-array>
+
     <string-array name="bottom_tab_list">
-        <item>TRAEGERGILLS</item>
+        <item>RECTECGRILLS</item>
         <item>RECIPES</item>
         <item>REMOTE</item>
         <item>SHOP</item>
-        <item>MY</item>
+        <item>MORE</item>
     </string-array>
     <string-array name="top_tab_list">
-        <item>\@TRAEGERGILLS</item>
-        <item>\@TRAEGERRECIPES</item>
+        <item>\@RECTECGRILLS</item>
+        <item>\@RECTECRECIPES</item>
         <item>FACEBOOK</item>
         <item>TWITTER</item>
         <item>PANDA</item>
@@ -36,11 +38,11 @@
     <string-array name="top_tab_list2">
         <item>ALL</item>
         <item>FAVORITES</item>
-        <item>BEEF</item>
+  <!--      <item>BEEF</item>
         <item>PORK</item>
         <item>LAMB</item>
         <item>SEAFOLLY</item>
-        <item>SHIT</item>
+        <item>SHIT</item>-->
     </string-array>
 
    <!-- behavior-->
@@ -49,9 +51,10 @@
     <string name="bye_burger_title_behavior">com.ym.traegergill.behavior.ByeBurgerTitleBehavior</string>
     <!-- behavior-->
     <!--footer-loading-->
-    <string name="rv_with_footer_pull_load_more">上拉或点击加载更多</string>
-    <string name="rv_with_footer_loading">加载中…</string>
-    <string name="rv_with_footer_empty">没有数据啦</string>
+   <!-- <string name="rv_with_footer_pull_load_more">上拉或点击加载更多</string>-->
+    <string name="rv_with_footer_pull_load_more">Load more</string>
+    <string name="rv_with_footer_loading">Loading…</string>
+    <string name="rv_with_footer_empty">No More Data</string>
     <!--footer-loading-->
     <!--transitionAction-->
     <string name="iv_img_transitionName">iv_img_transitionName</string>
@@ -80,13 +83,13 @@ The Android Studio version has been updated to version 2.0 Preview4, and the ADT
     <string name="New_Password">New Password</string>
     <string name="FORGET_PASSWORD">FORGET PASSWORD</string>
     <string name="Verification_Code">Verification Code</string>
-
+    <string name="setting">SETTING</string>
     <string name="Sign_Out">Sign Out</string>
     <string name="SAVE">SAVE</string>
     <string name="CLEAR_ALL">CLEAR ALL</string>
     <string name="APPLY">APPLY</string>
-    <string name="PURCHASE_PRODUCTS">PURCHASE TRAEGER WIFIRE PRODUCTS</string>
-    <string name="CONNECT_TO">CONNECT TO TRAEGER WIFIRE</string>
+    <string name="PURCHASE_PRODUCTS">PURCHASE RECTEC WIFIRE PRODUCTS</string>
+    <string name="CONNECT_TO">CONNECT TO RECTEC WIFIRE</string>
     <string name="Next_Step">Next Step</string>
     <string name="add_device_text1">Long press reset button of the equipment until Wi-Fi indicator light is quickly flashing.</string>
     <string name="add_device_text2">instructor light is on other status</string>
@@ -99,13 +102,13 @@ The Android Studio version has been updated to version 2.0 Preview4, and the ADT
     <string name="Probe_A">Probe A</string>
     <string name="Probe_B">Probe B</string>
     <string name="Alarms">Alarms</string>
-    <string name="Temperature_Uint">Temperature Uint</string>
+    <string name="Temperature_Uint">Temperature Unit</string>
     <string name="Temperature_Calibration">Temperature Calibration</string>
     <string name="Minimum_Feed_Rate">Minimum Feed Rate</string>
     <string name="Set_the_Device_Name">Set the Device Name</string>
     <string name="Temperature_Chart">Temperature Chart</string>
     <string name="temp_calibration_step1_text">1) Place indenpendent device probe in center of grill 1\"above grate.</string>
-    <string name="temp_calibration_step2_text">2) Set grill to 350℃ and preheat for 1 hour.</string>
+    <string name="temp_calibration_step2_text">2) Set grill to 350℉ and preheat for 1 hour.</string>
     <string name="temp_calibration_step3_text" >3)</string>
 
     <string name="Your_Temperatue_Value_">Your Temperatue Value&#058;</string>
@@ -126,13 +129,12 @@ The Android Studio version has been updated to version 2.0 Preview4, and the ADT
     <string name="Forget_Password">Forget Password</string>
     <string name="Complete">Complete</string>
 
-    <string name="add_device_success_text">Now let\'s give your Traeger\n WiFIER product a name and\nyou\'re done!</string>
+    <string name="add_device_success_text">Now let\'s give your RECTEC\n WiFIER product a name and\nyou\'re done!</string>
 
-    <string name="sure_delete_device">Are you sure delete device?</string>
+    <string name="remove_the_device">Remove the device?</string>
     <string name="Yes">Yes</string>
     <string name="No">No</string>
-
-
+    <string name="wifi_psw_is_empty">Wi-Fi password is empty.</string>
 
 
     <string name="about">About</string>
@@ -383,18 +385,6 @@ The Android Studio version has been updated to version 2.0 Preview4, and the ADT
     </string>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
   <!--  tuya-->
     <string name="device_list">Device list</string>
     <string name="share_list">Share list</string>
@@ -605,6 +595,8 @@ The Android Studio version has been updated to version 2.0 Preview4, and the ADT
     <string name="ty_share_default_info">Enter mobile number/E-mail</string>
     <string name="ty_no_data">No data</string>
     <!-- EZ配置 -->
+
+
     <string name="ez_notSupport_5G">This app is supported only on 2.4GHz Wi-Fi channels</string>
     <string name="ez_notSupport_5G_change">Change</string>
     <string name="ez_notSupport_5G_continue">Continue</string>

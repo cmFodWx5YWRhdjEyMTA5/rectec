@@ -1,32 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:williamchart="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/chart_card"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="160dp"
-    android:layout_margin="1dp"
-    williamchart:cardBackgroundColor="#343f57"
-    williamchart:cardCornerRadius="6dp">
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/chart_toolbar"
+        layout="@layout/view_toolbar_white_back" />
 
     <RelativeLayout
+        android:id="@+id/rl_setting"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <include
-            android:id="@+id/chart_toolbar"
-            layout="@layout/card_toolbar" />
-
-        <com.db.chart.view.LineChartView
-            android:id="@+id/chart"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/chart_toolbar"
-            android:layout_marginBottom="15dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            williamchart:chart_axis="false"
-            williamchart:chart_axisBorderSpacing="15dp"
-            williamchart:chart_labelColor="#6a84c3" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/chart_toolbar"
+        android:background="@color/tab_bg"
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        android:paddingRight="20dp"
+        >
+        <TextView
+            android:background="@drawable/chart_unit_backg"
+            android:id="@+id/tv_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Unit"
+            android:drawablePadding="10dp"
+            android:textColor="@color/color9999"
+            android:layout_alignParentRight="true"
+            android:drawableRight="@drawable/my_icon_arrow" />
     </RelativeLayout>
 
-</android.support.v7.widget.CardView>
+    <LinearLayout
+        android:id="@+id/tv_remark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/tab_bg"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/tv_start_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" - "
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_end_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/chart1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/tv_remark"
+        android:layout_below="@id/rl_setting" />
+</RelativeLayout>

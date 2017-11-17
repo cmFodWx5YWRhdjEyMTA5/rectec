@@ -140,7 +140,22 @@ public class SetUpWifiDeviceActivity extends BaseActivity {
                 if (wifiInfo == null) {
                     OUtil.toastError(getActivity(), getString(R.string.please_connect_to_wifi));
                 } else if (TextUtils.isEmpty(wifiPassword.getText())) {
-                    OUtil.toastError(getActivity(), getString(R.string.please_input_wifi_password));
+                    DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.wifi_psw_is_empty)
+                            , getActivity().getString(R.string.ez_notSupport_5G_change), getActivity().getString(R.string.ez_notSupport_5G_continue), null, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    switch (which) {
+                                        case DialogInterface.BUTTON_POSITIVE:
+                                            //startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                                            break;
+                                        case DialogInterface.BUTTON_NEGATIVE:
+                                            goNext();
+                                            break;
+                                    }
+                                }
+                            }).show();
+
+                    //OUtil.toastError(getActivity(), getString(R.string.please_input_wifi_password));
                 } else if (wifiInfo.getFrequency() / 1000 == 2) {
                     goNext();
                 } else {

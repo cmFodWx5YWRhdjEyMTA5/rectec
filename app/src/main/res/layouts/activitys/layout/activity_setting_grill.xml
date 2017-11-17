@@ -39,7 +39,7 @@
         android:layout_marginLeft="15dp"
         ></View>
     <LinearLayout
-        android:id="@+id/ll_temp_uint"
+        android:id="@+id/ll_temp_unit"
         android:background="@drawable/view_press"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -57,7 +57,7 @@
             android:textStyle="bold"
             />
         <TextView
-            android:id="@+id/tv_uint"
+            android:id="@+id/tv_unit"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:textColor="@color/color444"

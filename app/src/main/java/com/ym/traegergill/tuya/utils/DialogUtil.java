@@ -462,6 +462,7 @@ public class DialogUtil {
                                            String negativeButton, String neutralButton, DialogInterface.OnClickListener listener
     ) {
         AlertDialog.Builder dialog = UIFactory.buildAlertDialog(context);
+        dialog.setCancelable(false);
         if (!TextUtils.isEmpty(positiveButton)) {
             dialog.setPositiveButton(positiveButton, listener);
         }

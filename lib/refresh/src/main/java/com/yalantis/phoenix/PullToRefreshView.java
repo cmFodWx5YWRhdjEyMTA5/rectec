@@ -57,13 +57,15 @@ public class PullToRefreshView extends ViewGroup {
     private int mTargetPaddingBottom;
     private int mTargetPaddingRight;
     private int mTargetPaddingLeft;
-
+    private Context context;
     public PullToRefreshView(Context context) {
         this(context, null);
+        this.context = context;
     }
 
     public PullToRefreshView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RefreshView);
         final int type = a.getInteger(R.styleable.RefreshView_type, STYLE_MINE);
         a.recycle();
@@ -86,10 +88,10 @@ public class PullToRefreshView extends ViewGroup {
         setRefreshing(false);
         switch (type) {
             case STYLE_MINE:
-                mBaseRefreshView = new MyRefreshView(getContext(), this);
+                mBaseRefreshView = new MyRefreshView(context, this);
                 break;
             case STYLE_SUN:
-                mBaseRefreshView = new SunRefreshView(getContext(), this);
+                mBaseRefreshView = new SunRefreshView(context, this);
                 break;
             default:
                 throw new InvalidParameterException("Type does not exist");

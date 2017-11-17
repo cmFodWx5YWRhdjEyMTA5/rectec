@@ -2,21 +2,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/control_bg09"
     android:orientation="vertical">
 
     <include layout="@layout/view_toolbar_white_setting"></include>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/control_bg09"
+        >
     <include
         layout="@layout/view_cover_error"
+        android:visibility="gone"
         ></include>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white"
+            android:background="@color/control_bg09"
             android:orientation="vertical">
 
             <View
@@ -24,19 +27,23 @@
                 android:layout_height="1dp"
                 android:background="@color/graydis"></View>
 
-            <com.ym.traegergill.view.ElasticityScrollView
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:scrollbars="none"
+                android:fadingEdge="none"
+                android:overScrollMode="never"
+                >
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/control_bg09">
-
                     <LinearLayout
                         android:id="@+id/top_main"
                         android:layout_width="match_parent"
-                        android:layout_height="203dp"
+                        android:layout_height="200dp"
                         android:background="@color/white"
                         android:orientation="horizontal">
 
@@ -59,7 +66,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="270"
-                                    android:textColor="@color/orange_text"
+                                    android:textColor="@color/color444"
                                     android:textSize="33sp" />
 
                                 <TextView
@@ -67,7 +74,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/CCCC"
-                                    android:textColor="@color/orange_text"
+                                    android:textColor="@color/color444"
                                     android:textSize="33sp" />
                             </LinearLayout>
 
@@ -248,7 +255,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_below="@id/top_main"
-                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentBottom="true"
                         android:layout_marginTop="10dp">
 
                         <RelativeLayout
@@ -332,15 +339,13 @@
                                 android:src="@drawable/add_press"
                                 android:translationZ="8dp" />
                         </RelativeLayout>
-
                         <LinearLayout
                             android:id="@+id/ll_power_status"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@id/mid_control"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginTop="12.5dp"
-                            android:gravity="center_vertical"
+                            android:layout_marginTop="10dp"
+                            android:gravity="center"
                             android:orientation="horizontal">
 
                             <CheckBox
@@ -351,35 +356,35 @@
                                 android:button="@null"
                                 android:gravity="left|center_vertical"
                                 android:paddingLeft="50dp"
-                                android:text="ON"
-                                android:textColor="@color/orange_light"
-                                android:textSize="17sp" />
+                                android:text="OFF"
+                                android:textColor="@color/color9999"
+                                android:textSize="17sp"
+                                android:translationZ="100dp"/>
 
                         </LinearLayout>
 
-                        <LinearLayout
-                            android:id="@+id/ll_temp_chart"
-                            android:layout_width="match_parent"
-                            android:layout_height="60dp"
-                            android:layout_below="@id/ll_power_status"
-                            android:layout_marginTop="20dp"
-                            android:background="@drawable/temp_chart_click"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="center"
-                                android:drawableLeft="@drawable/grill_chart"
-                                android:drawablePadding="17dp"
-                                android:gravity="center"
-                                android:text="@string/Temperature_Chart"
-                                android:textColor="@color/white"
-                                android:textSize="20dp" />
-                        </LinearLayout>
                     </RelativeLayout>
                 </RelativeLayout>
-            </com.ym.traegergill.view.ElasticityScrollView>
+            </ScrollView>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/ll_temp_chart"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/temp_chart_click"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:drawableLeft="@drawable/grill_chart"
+                android:drawablePadding="17dp"
+                android:gravity="center"
+                android:text="@string/Temperature_Chart"
+                android:textColor="@color/white"
+                android:textSize="20dp" />
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

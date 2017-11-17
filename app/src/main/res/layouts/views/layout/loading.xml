@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="加载中..."
+        android:text="@string/loading"
         android:textColor="#FFF"
         android:textSize="12sp" />
 </LinearLayout>

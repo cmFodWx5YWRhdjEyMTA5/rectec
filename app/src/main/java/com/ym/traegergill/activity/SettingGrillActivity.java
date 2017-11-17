@@ -17,7 +17,6 @@ import com.ym.traegergill.view.EditPickerDialog;
 import com.ym.traegergill.view.StringPickerDialog;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,17 +33,17 @@ public class SettingGrillActivity extends BaseActivity {
     TextView title;
     @BindView(R.id.ll_alerms)
     LinearLayout llAlerms;
-    @BindView(R.id.ll_temp_uint)
-    LinearLayout llTempUint;
+    @BindView(R.id.ll_temp_unit)
+    LinearLayout llTempUnit;
     @BindView(R.id.ll_temp_cali)
     LinearLayout llTempCali;
     @BindView(R.id.ll_mini_feed_rate)
     LinearLayout llMiniFeedRate;
-    @BindView(R.id.tv_uint)
-    TextView tvUint;
+    @BindView(R.id.tv_unit)
+    TextView tvUnit;
     @BindView(R.id.ll_set_name)
     LinearLayout llSetName;
-    StringPickerDialog uintPickerDialog;
+    StringPickerDialog UnitPickerDialog;
     EditPickerDialog namePickerDialog;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,35 +66,35 @@ public class SettingGrillActivity extends BaseActivity {
             if (entry.getKey().equals("108")) {
                 boolean isC = (boolean) entry.getValue();
                 if (isC) {
-                    tvUint.setText(getResources().getString(R.string.CCCC));
+                    tvUnit.setText(getResources().getString(R.string.CCCC));
                 } else {
-                    tvUint.setText(getResources().getString(R.string.FFFF));
+                    tvUnit.setText(getResources().getString(R.string.FFFF));
                 }
                 break;
             }
         }
     }
 
-    @OnClick({R.id.ll_alerms, R.id.ll_temp_uint, R.id.ll_temp_cali, R.id.ll_mini_feed_rate,R.id.ll_set_name})
+    @OnClick({R.id.ll_alerms, R.id.ll_temp_unit, R.id.ll_temp_cali, R.id.ll_mini_feed_rate,R.id.ll_set_name})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.ll_alerms:
                 getActivity().startActivity(new Intent(getActivity(), AlarmsActivity.class).putExtra(RemoteControlActivity.INTENT_DEVID,mDevId));
                 break;
-            case R.id.ll_temp_uint:
-                if (uintPickerDialog == null) {
+            case R.id.ll_temp_unit:
+                if (UnitPickerDialog == null) {
                     List<String> datas = new ArrayList<>();
                     datas.add("℃");
                     datas.add("℉");
-                    uintPickerDialog = new StringPickerDialog(getActivity(), datas, tvUint.getText().toString());
-                    uintPickerDialog.setTitle("Uint Select");
-                    uintPickerDialog.setCallBackListen(new StringPickerDialog.callBackListen() {
+                    UnitPickerDialog = new StringPickerDialog(getActivity(), datas, tvUnit.getText().toString());
+                    UnitPickerDialog.setTitle("Unit Select");
+                    UnitPickerDialog.setCallBackListen(new StringPickerDialog.callBackListen() {
                         @Override
                         public void callback(String text) {
                             showToastSuccess("温度不可切换");
                             return;
-                            /*if(!text.equals(tvUint.getText().toString())){
-                                tvUint.setText(text);
+                            /*if(!text.equals(tvUnit.getText().toString())){
+                                tvUnit.setText(text);
                                 HashMap<String, Object> stringObjectHashMap = new HashMap<>();
                                 if(text.equals(getResources().getString(R.string.CCCC))){
                                     stringObjectHashMap.put("108",true);
@@ -117,9 +116,9 @@ public class SettingGrillActivity extends BaseActivity {
                             }*/
                         }
                     });
-                    uintPickerDialog.setSelect(tvUint.getText().toString());
+                    UnitPickerDialog.setSelect(tvUnit.getText().toString());
                 }
-                uintPickerDialog.show();
+                UnitPickerDialog.show();
 
                 break;
             case R.id.ll_temp_cali:

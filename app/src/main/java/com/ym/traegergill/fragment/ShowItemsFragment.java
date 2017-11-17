@@ -2,51 +2,49 @@ package com.ym.traegergill.fragment;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.OvershootInterpolator;
 
-import com.lzy.okhttputils.OkHttpUtils;
-import com.lzy.okhttputils.cache.CacheMode;
+import com.lzy.okhttputils.callback.StringCallback;
 import com.lzy.okhttputils.model.HttpParams;
 import com.yalantis.phoenix.PullToRefreshView;
 import com.ym.traegergill.R;
 import com.ym.traegergill.activity.ItemsDetailActivity;
 import com.ym.traegergill.adapter.ShowItemsRvAdapter;
-import com.ym.traegergill.bean.PhotoBean;
-import com.ym.traegergill.callback.JsonCallback;
-import com.ym.traegergill.evaluation.bean.Evaluation;
-import com.ym.traegergill.evaluation.bean.EvaluationItem;
-import com.ym.traegergill.evaluation.bean.EvaluationPic;
+import com.ym.traegergill.modelBean.RecipeShare;
 import com.ym.traegergill.net.URLs;
 import com.ym.traegergill.other.SpaceItemDecoration;
+import com.ym.traegergill.tools.MyNetTool;
 import com.ym.traegergill.tools.OUtil;
+import com.ym.traegergill.tuya.utils.DialogUtil;
+import com.ym.traegergill.tuya.utils.ProgressUtil;
 import com.ym.traegergill.view.LoadingView;
 import com.ym.traegergill.view.loadmore.DefaultFootItem;
 import com.ym.traegergill.view.loadmore.OnLoadMoreListener;
 import com.ym.traegergill.view.loadmore.RecyclerViewWithFooter;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import okhttp3.Call;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -54,22 +52,23 @@ import okhttp3.Response;
  * Created by Administrator on 2017/9/18.
  */
 
+@SuppressLint("ValidFragment")
 public class ShowItemsFragment extends BaseFragment {
-
-
     @BindView(R.id.rv_load_more)
     RecyclerViewWithFooter rvLoadMore;
     @BindView(R.id.pull_to_refresh)
     PullToRefreshView pullToRefresh;
     Unbinder unbinder;
     private LoadingView loading;
-    private static final DecelerateInterpolator DECCELERATE_INTERPOLATOR = new DecelerateInterpolator();
-    private static final AccelerateInterpolator ACCELERATE_INTERPOLATOR = new AccelerateInterpolator();
-    private static final OvershootInterpolator OVERSHOOT_INTERPOLATOR = new OvershootInterpolator(4);
     String[] imgs;
-    List<PhotoBean> mData;
+    List<RecipeShare> mData;
     ShowItemsRvAdapter adapter;
-    int count = 0;
+    private int sharePlatformid;
+
+    @SuppressLint("ValidFragment")
+    public ShowItemsFragment(int sharePlatformid) {
+        this.sharePlatformid = sharePlatformid;
+    }
 
     @Nullable
     @Override
@@ -80,18 +79,12 @@ public class ShowItemsFragment extends BaseFragment {
 
         return view;
     }
+
     @Override
     protected void onFragmentFirstVisible() {
         super.onFragmentFirstVisible();
-        loading = new LoadingView(getActivity(), R.style.CustomDialog);
-        loading.show();
-        new Handler().postDelayed(new Runnable() {//定义延时任务模仿网络请求
-            @Override
-            public void run() {
-                loading.dismiss();//3秒后调用关闭加载的方法
-
-            }
-        }, 300);
+     /*   loading = new LoadingView(getActivity(), R.style.CustomDialog);
+        loading.show();*/
         initRecycler();
     }
 
@@ -103,6 +96,7 @@ public class ShowItemsFragment extends BaseFragment {
                     @Override
                     public void run() {
                         page = 0;
+                        rvLoadMore.setLoading();
                         initData(false);
                         pullToRefresh.setRefreshing(false);
                     }
@@ -110,14 +104,13 @@ public class ShowItemsFragment extends BaseFragment {
             }
         });
         mData = new ArrayList<>();
-
         rvLoadMore.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         adapter = new ShowItemsRvAdapter(getActivity(), mData);
         adapter.setOnMyItemClickListener(new ShowItemsRvAdapter.OnMyItemClickListener() {
             @Override
             public void onNormalClick(View v, int position) {
                 getActivity().startActivity(
-                        new Intent(getActivity(), ItemsDetailActivity.class).putExtra("data", mData.get(position).getImageUrl()),
+                        new Intent(getActivity(), ItemsDetailActivity.class).putExtra("recipeShareid", mData.get(position).getRecipeShareid()),
                         ActivityOptionsCompat.makeSceneTransitionAnimation(
                                 (Activity) getActivity(),
                                 Pair.create(v.findViewById(R.id.iv_image), getActivity().getString(R.string.iv_img_transitionName))
@@ -146,65 +139,79 @@ public class ShowItemsFragment extends BaseFragment {
     }
 
     int page = 0;
+    int maxPage = 1;
 
     private void initData(final boolean isMore) {
+        if (!isMore) {
+            ProgressUtil.showLoading(getActivity(), getString(R.string.loading));
+            new Handler().postDelayed(new Runnable() {//定义延时任务模仿网络请求
+                @Override
+                public void run() {
+                    ProgressUtil.hideLoading();
+                }
+            }, 1000);
+        }
         HttpParams params = new HttpParams();
-        params.put("goodsId", "98573");
-        params.put("pageNo", String.valueOf(page));
-        OkHttpUtils.post(URLs.Evaluation)//
-                .tag(this)//
-                .params(params)//
-                .cacheKey("Evaluation")//
-                .cacheMode(CacheMode.FIRST_CACHE_THEN_REQUEST)//
-                .execute(new JsonCallback<Evaluation>(Evaluation.class) {
-                    @Override
-                    public void onResponse(boolean isFromCache, Evaluation evaluation, Request request, @Nullable Response response) {
-                        ArrayList<EvaluationItem> datas = evaluation.getEvaluataions();
-                        if (datas.size() == 0) {
-                            rvLoadMore.setEnd("没有更多数据了");
-                            return;
-                        }
-
-                        if (isMore) {
-                            for (EvaluationItem item : datas) {
-                                List<EvaluationPic> imageDetails = item.getAttachments();
-                                if (imageDetails != null) {
-                                    for (EvaluationPic pic : imageDetails) {
-                                        mData.add(new PhotoBean(pic.getImageUrl()));
-                                    }
-                                }
-
+        params.put("sharePlatformid", sharePlatformid + "");
+        params.put("page", (page + 1) + "");
+        StringCallback callback = new StringCallback() {
+            @Override
+            public void onResponse(boolean isFromCache, String s, Request request, @Nullable Response response) {
+                TLog("isFromCache : "+isFromCache+" json : " + s);
+                try {
+                    JSONObject obj = new JSONObject(s);
+                    if (obj.optInt("code") == 200) {
+                        JSONObject content = obj.optJSONObject("content");
+                        page = content.optInt("page");
+                        maxPage = content.optInt("maxPage");
+                        JSONArray array = content.optJSONArray("data");
+                        List<RecipeShare> beans = new ArrayList<RecipeShare>();
+                        if(array != null) {
+                            for (int i = 0; i < array.length(); i++) {
+                                RecipeShare share = new RecipeShare();
+                                share.setShareMainPic(array.optJSONObject(i).optString("shareMainPic"));
+                                share.setRecipeShareid(array.optJSONObject(i).optInt("recipeShareid"));
+                                beans.add(share);
                             }
-                        } else {
+                        }
+                        if (!isMore) {
                             mData.clear();
-                            for (EvaluationItem item : datas) {
-                                List<EvaluationPic> imageDetails = item.getAttachments();
-                                if (imageDetails != null) {
-                                    for (EvaluationPic pic : imageDetails) {
-                                        mData.add(new PhotoBean(pic.getImageUrl()));
-                                    }
-                                }
-
-                            }
                         }
-                        page++;
+                        mData.addAll(beans);
+                        if (array == null || array.length() == 0 || maxPage == page) {
+                            rvLoadMore.setEnd(getResources().getString(R.string.rv_with_footer_empty));
+                        }
                         rvLoadMore.getAdapter().notifyDataSetChanged();
                     }
-                });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onAfter(boolean isFromCache, @Nullable String s, Call call, @Nullable Response response, @Nullable Exception e) {
+                super.onAfter(isFromCache, s, call, response, e);
+            }
+        };
+        if(! MyNetTool.netHttpParams(getActivity(),URLs.findRecipeShareBySharePlatformid,callback,params)){
+            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
+                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    System.exit(0);
+                                    break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    initData(isMore);
+                                    break;
+                            }
+                        }
+                    }).show();
+        }
+
     }
 
-
-    String getURL() {
-        Random random = new Random();
-        String url = imgs[random.nextInt(imgs.length) % imgs.length];
-        return url;
-    }
-
-    String getURL(int index) {
-       /* index = (index/(20/imgs.length));
-        String url = imgs[index%imgs.length];*/
-        return getURL();
-    }
 
     @Override
     public void onDestroyView() {

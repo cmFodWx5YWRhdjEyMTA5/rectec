@@ -5,17 +5,17 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.tencent.smtt.sdk.WebChromeClient;
-import com.tencent.smtt.sdk.WebSettings;
-import com.tencent.smtt.sdk.WebView;
-import com.tencent.smtt.sdk.WebViewClient;
+
 import com.yalantis.phoenix.PullToRefreshView;
 import com.ym.traegergill.R;
-import com.ym.traegergill.view.ScrollWebView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,8 +29,7 @@ import butterknife.Unbinder;
 public class H5ShopFragment extends BaseFragment {
 
     Unbinder unbinder;
-    @BindView(R.id.tbsContent)
-    ScrollWebView tbsContent;
+
     String url = "http://www.rectecgrills.com/";
     @BindView(R.id.back)
     ImageView back;
@@ -40,16 +39,23 @@ public class H5ShopFragment extends BaseFragment {
     ProgressBar progressBar;
     @BindView(R.id.pull_to_refresh)
     PullToRefreshView pullToRefresh;
+    @BindView(R.id.webView)
+    android.webkit.WebView webview;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_h5_shop, container, false);
         unbinder = ButterKnife.bind(this, view);
+        return view;
+    }
+
+    @Override
+    protected void onFragmentFirstVisible() {
+        super.onFragmentFirstVisible();
         title.setText("SHOP");
         initRefresh();
         initWebView();
-        return view;
     }
 
     private void initRefresh() {
@@ -59,8 +65,8 @@ public class H5ShopFragment extends BaseFragment {
                 pullToRefresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        tbsContent.clearCache(true);
-                        tbsContent.loadUrl(url);
+                        webview.clearCache(true);
+                        webview.loadUrl(url);
                         pullToRefresh.setRefreshing(false);
                     }
                 }, 1000);
@@ -69,17 +75,17 @@ public class H5ShopFragment extends BaseFragment {
     }
 
     private void initWebView() {
-        tbsContent.loadUrl(url);
-        WebSettings webSettings = tbsContent.getSettings();
+        webview.loadUrl(url);
+        WebSettings webSettings = webview.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        tbsContent.setWebViewClient(new WebViewClient() {
+        webview.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
                 return true;
             }
         });
-        tbsContent.setWebChromeClient(new WebChromeClient() {
+        webview.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 // TODO Auto-generated method stub
@@ -97,7 +103,8 @@ public class H5ShopFragment extends BaseFragment {
         });
 
         pullToRefresh.setTag(true);
-        tbsContent.setScrollViewListener(new ScrollWebView.ScrollViewListener() {
+        webview.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+      /*  webview.setScrollViewListener(new ScrollWebView.ScrollViewListener() {
             @Override
             public void onScrollChanged(WebView scrollWebView, int x, int y, int oldx, int oldy) {
                 if (y == 0) {//滑动到顶部
@@ -112,10 +119,24 @@ public class H5ShopFragment extends BaseFragment {
                     }
                 }
             }
-        });
+        });*/
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (null != webview) {
+            webview.onResume();
+        }
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (null != webview) {
+            webview.onPause();
+        }
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -124,10 +145,10 @@ public class H5ShopFragment extends BaseFragment {
 
     @OnClick(R.id.back)
     public void onViewClicked() {
-        if (tbsContent.canGoBack()) {
-            tbsContent.goBack();
+        if (webview.canGoBack()) {
+            webview.goBack();
         } else {
-            showToastError("已经是首页了!无法回退");
+            showToastError("It's first page,can't back.");
         }
 
     }

@@ -1,1 +1,1 @@
-include ':app', ':lib:refresh', ':lib:magicindicator'
+include ':app', ':lib:refresh', ':lib:magicindicator', ':lib:MPChartLib', 'lib:adlibrary'

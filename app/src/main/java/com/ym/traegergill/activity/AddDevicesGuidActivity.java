@@ -52,11 +52,23 @@ public class AddDevicesGuidActivity extends BaseActivity {
         overridePendingTransition(this,ANIMATE_SLIDE_BOTTOM_FROM_TOP);
     }
 
-    @OnClick(R.id.next_step)
+    @OnClick({R.id.next_step,R.id.other_status})
     public void onViewClicked(View view) {
-        getActivity().startActivity(new Intent(getActivity(),SetUpWifiDeviceActivity.class));
-        this.finish();
-        overridePendingTransition(this,ANIMATE_FORWARD);
+        switch (view.getId()){
+            case R.id.next_step:
+                getActivity().startActivity(new Intent(getActivity(),SetUpWifiDeviceActivity.class));
+                this.finish();
+                overridePendingTransition(this,ANIMATE_FORWARD);
+                break;
+            case R.id.other_status:
+                Intent intent = new Intent(getActivity(), BrowserActivity.class);
+                intent.putExtra(BrowserActivity.EXTRA_LOGIN, false);
+                intent.putExtra(BrowserActivity.EXTRA_TITLE, getActivity().getString(R.string.ty_ez_help));
+                intent.putExtra(BrowserActivity.EXTRA_URI, "http://smart.tuya.com/reset");
+                getActivity().startActivity(intent);
+                break;
+        }
+
 
     }
     @Override

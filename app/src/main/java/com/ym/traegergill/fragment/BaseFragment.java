@@ -16,9 +16,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.ym.traegergill.R;
 import com.ym.traegergill.activity.BaseActivity;
 import com.ym.traegergill.tools.Constants;
+import com.ym.traegergill.tools.OUtil;
 
 /**
  * Created by Administrator on 2017/9/18.
@@ -28,10 +30,9 @@ public class BaseFragment extends Fragment {
     private static final String TAG = BaseFragment.class.getSimpleName();
     private boolean isFragmentVisible;
     private boolean isReuseView;
-    private boolean isFirstVisible;
+    protected boolean isFirstVisible;
     private View rootView;
     protected View view;
-    protected ProgressDialog pdDialog;
 
 
     @Override
@@ -104,7 +105,7 @@ public class BaseFragment extends Fragment {
         initVariable();
     }
 
-    private void initVariable() {
+    public void initVariable() {
         isFirstVisible = true;
         isFragmentVisible = false;
         rootView = null;
@@ -171,4 +172,6 @@ public class BaseFragment extends Fragment {
         }
         Log.i(Constants.preTestString  + TAG,msg);
     }
+
+
 }

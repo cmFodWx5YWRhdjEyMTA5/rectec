@@ -97,7 +97,6 @@ public class StringPickerDialog extends Dialog implements View.OnClickListener{
                 returnText = text;
             }
         });
-
         sure.setOnClickListener(this);
         back.setOnClickListener(this);
     }

@@ -21,13 +21,15 @@ public class SnackbarUtil {
     public static final int Confirm = 2;
     public static final int Warning = 3;
     public static final int Alert = 4;
+    public static final int MyWarning = 5;
 
 
     public static int red = 0xfff44336;
     public static int green = 0xff4caf50;
     public static int blue = 0xff2195f3;
-    public static int orange = 0xffffc107;
-
+    public static int yellow = 0xffffc107;
+    public static int orange = 0xffdc5f27;
+    public static int black = 0xff444444;
     /**
      * 短显示Snackbar，自定义颜色
      *
@@ -132,8 +134,10 @@ public class SnackbarUtil {
                 setSnackbarColor(snackbar, orange);
                 break;
             case Alert:
-
                 setSnackbarColor(snackbar, Color.YELLOW, red);
+                break;
+            case MyWarning:
+                setSnackbarColor(snackbar, black, yellow);
                 break;
         }
     }

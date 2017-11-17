@@ -1,14 +1,16 @@
 package com.ym.traegergill.activity;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
+import com.lzy.okhttputils.OkHttpUtils;
 import com.tuya.smart.sdk.TuyaUser;
 import com.ym.traegergill.R;
 import com.ym.traegergill.tools.Constants;
@@ -16,11 +18,14 @@ import com.ym.traegergill.tools.OUtil;
 import com.ym.traegergill.tools.StatusBarTool;
 import com.ym.traegergill.tools.SystemTool;
 
+import okhttp3.OkHttpClient;
+
 /**
  * Created by Administrator on 2017/9/20.
  */
 
-public class BaseActivity extends AppCompatActivity{
+public class BaseActivity extends AppCompatActivity {
+
     /** 日志输出标志 **/
     protected final String TAG =
             this.getClass().getSimpleName();
@@ -29,9 +34,16 @@ public class BaseActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         // 设置不能横屏，防止生命周期的改变
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-       checkLogin();
+        checkLogin();
+    }
+
+    @Override
+    public void setContentView(@LayoutRes int layoutResID) {
+        super.setContentView(layoutResID);
 
     }
+
+
     protected Activity getActivity(){
         return this;
     }
@@ -101,5 +113,13 @@ public class BaseActivity extends AppCompatActivity{
         } else if (direction == ANIMATE_SLIDE_BOTTOM_FROM_TOP) {
             activity.overridePendingTransition(R.anim.slide_none_medium_time, R.anim.slide_top_to_bottom);
         }
+    }
+
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        OkHttpUtils.getInstance().cancelTag(getActivity());
     }
 }

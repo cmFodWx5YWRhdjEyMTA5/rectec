@@ -20,6 +20,7 @@ import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IRequestCallback;
 import com.tuya.smart.sdk.bean.DeviceBean;
 import com.ym.traegergill.R;
+import com.ym.traegergill.activity.AddDevicesGuidActivity;
 import com.ym.traegergill.activity.RemoteControlActivity;
 import com.ym.traegergill.tuya.event.DeviceUpdateEvent;
 import com.ym.traegergill.tools.OUtil;
@@ -40,7 +41,6 @@ public class DeviceListPresenter extends BasePresenter implements GwRelationEven
     private static final int WHAT_JUMP_GROUP_PAGE = 10212;
     protected Activity mActivity;
     protected IDeviceListView mView;
-
     public DeviceListPresenter(Activity activity, IDeviceListView view) {
         mActivity = activity;
         mView = view;
@@ -122,6 +122,7 @@ public class DeviceListPresenter extends BasePresenter implements GwRelationEven
         Intent intent = new Intent(mActivity, RemoteControlActivity.class);
         intent.putExtra(RemoteControlActivity.INTENT_DEVID, devBean.getDevId());
         mActivity.startActivity(intent);
+        mActivity.overridePendingTransition(R.anim.slide_bottom_to_top, R.anim.slide_none_medium_time);
     }
 
     public void getDataFromServer() {

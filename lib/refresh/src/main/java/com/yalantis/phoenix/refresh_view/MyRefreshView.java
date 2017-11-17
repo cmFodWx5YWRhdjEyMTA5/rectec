@@ -39,6 +39,7 @@ public class MyRefreshView extends BaseRefreshView implements Animatable {
     private static final Interpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
 
     private PullToRefreshView mParent;
+
     private Matrix mMatrix;
     private Animation mAnimation;
 
@@ -85,6 +86,8 @@ public class MyRefreshView extends BaseRefreshView implements Animatable {
         if (viewWidth <= 0 || viewWidth == mScreenWidth) return;
 
         mScreenWidth = viewWidth;
+
+
         mSkyHeight = (int) (SKY_RATIO * mScreenWidth);
         mSkyTopOffset = (mSkyHeight * 0.38f);
         mSkyMoveOffset = Utils.convertDpToPixel(getContext(), 15);
@@ -94,6 +97,7 @@ public class MyRefreshView extends BaseRefreshView implements Animatable {
         mTownFinalTopOffset = (mParent.getTotalDragDistance() - mTownHeight * TOWN_FINAL_SCALE);
         mTownMoveOffset = Utils.convertDpToPixel(getContext(), 10);
 
+        mSunSize = mScreenWidth/5;
         mSunLeftOffset = 0.5f * (float) mScreenWidth-mSunSize/2;
         mSunTopOffset = (mParent.getTotalDragDistance() * 0.1f);
 

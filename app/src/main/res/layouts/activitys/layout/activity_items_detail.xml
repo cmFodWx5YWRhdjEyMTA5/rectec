@@ -42,17 +42,17 @@
                     android:layout_centerVertical="true"
                     >
                     <TextView
+                        android:id="@+id/tv_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Daily Traeger Recipes"
                         android:textColor="@color/orange"
                         android:textSize="15sp"
                         />
                     <TextView
+                        android:id="@+id/tv_des"
                         android:layout_marginTop="4.5dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="\@traegerrecipes"
                         android:textColor="@color/color888"
                         android:textSize="14sp"
                         />
@@ -67,15 +67,22 @@
                 android:layout_marginRight="15dp"
                 ></View>
             <TextView
+                android:id="@+id/tv_shareContent"
                 android:layout_margin="15dp"
                 android:lineSpacingExtra="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/longTextTemp"
                 android:gravity="left|top"
                 android:textSize="14sp"
                 android:textColor="@color/color555"
                 />
+            <LinearLayout
+                android:id="@+id/ll_recipes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                >
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="24dp"
@@ -129,6 +136,7 @@
                     android:textColor="@color/white"
                     android:textSize="17sp" />
             </RelativeLayout>
+            </LinearLayout>
         </LinearLayout>
     </com.ym.traegergill.view.ZoomScrollView>
     <ImageView

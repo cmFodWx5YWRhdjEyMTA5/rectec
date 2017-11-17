@@ -1,5 +1,6 @@
 package com.ym.traegergill.tuya.utils;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -31,7 +32,7 @@ public class ProgressUtil {
         if (!TextUtils.isEmpty(message)) {
             ((TextView) progressDialog.findViewById(R.id.progress_dialog_message)).setText(message);
         }
-        if (!isShowLoading()) {
+        if (!isShowLoading() && !((Activity)context).isFinishing() && !((Activity)context).isDestroyed()) {
             progressDialog.show();
         }
     }
