@@ -40,7 +40,7 @@ public class AddDeviceSuccessActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_device_success);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
         initDb();
         init();
     }
@@ -91,7 +91,7 @@ public class AddDeviceSuccessActivity extends BaseActivity {
             @Override
             public void onSuccess() {
                 //重命名成功
-                DialogUtil.simpleSmartDialog(getActivity(), getString(R.string.save_success), new DialogInterface.OnClickListener() {
+                DialogUtil.simpleSmartDialog(getActivity(), getString(R.string.success), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         getActivity().finish();

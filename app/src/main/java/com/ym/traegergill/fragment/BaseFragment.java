@@ -22,6 +22,8 @@ import com.ym.traegergill.activity.BaseActivity;
 import com.ym.traegergill.tools.Constants;
 import com.ym.traegergill.tools.OUtil;
 
+import butterknife.Unbinder;
+
 /**
  * Created by Administrator on 2017/9/18.
  */
@@ -33,7 +35,7 @@ public class BaseFragment extends Fragment {
     protected boolean isFirstVisible;
     private View rootView;
     protected View view;
-
+    protected Unbinder unbinder;
 
     @Override
     public void startActivity(Intent intent) {
@@ -110,6 +112,9 @@ public class BaseFragment extends Fragment {
         isFragmentVisible = false;
         rootView = null;
         isReuseView = true;
+        if(unbinder!=null)
+            unbinder.unbind();
+
     }
 
     /**
@@ -172,6 +177,5 @@ public class BaseFragment extends Fragment {
         }
         Log.i(Constants.preTestString  + TAG,msg);
     }
-
 
 }

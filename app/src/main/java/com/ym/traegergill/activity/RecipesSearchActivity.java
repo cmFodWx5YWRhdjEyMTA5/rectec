@@ -54,7 +54,7 @@ public class RecipesSearchActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipes_search);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
         initListener();
     }
     private void initListener() {
@@ -99,13 +99,16 @@ public class RecipesSearchActivity extends BaseActivity {
             case R.id.searchFor:
             case R.id.cancel:
             case R.id.cover:
-                this.finish();
+                exit(view);
                 break;
         }
     }
 
-    @Override
-    public void finish() {
-        super.finish();
+
+    public void exit(View view){
+        //super.finish();
+        this.finishAfterTransition();
+
     }
+
 }

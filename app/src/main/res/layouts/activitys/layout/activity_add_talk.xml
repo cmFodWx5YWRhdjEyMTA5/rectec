@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include layout="@layout/view_toolbar_back"></include>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:textColor="@color/color32"
+        android:textSize="15sp"
+        android:hint="这一刻的想法..."
+        android:gravity="start"
+        android:background="@null"
+        android:layout_margin="10dp"
+        />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/photo_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:overScrollMode="never" />
+</LinearLayout>

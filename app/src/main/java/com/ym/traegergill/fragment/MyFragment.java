@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.TabLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,6 +26,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.lzy.okhttputils.callback.StringCallback;
+import com.lzy.okhttputils.model.HttpParams;
 import com.tuya.smart.android.user.bean.User;
 import com.tuya.smart.sdk.TuyaUser;
 import com.ym.traegergill.R;
@@ -30,6 +34,7 @@ import com.ym.traegergill.activity.BaseActivity;
 import com.ym.traegergill.activity.CreateAccountActivity;
 import com.ym.traegergill.activity.SetUpActivity;
 import com.ym.traegergill.activity.SignInActivity;
+import com.ym.traegergill.activity.TalkActivity;
 import com.ym.traegergill.adapter.MyFragmentRvAdapter;
 import com.ym.traegergill.bean.MyFragmentBean;
 import com.ym.traegergill.broadcast.TraegerGillBroadcastHelper;
@@ -43,6 +48,7 @@ import com.ym.traegergill.tools.OUtil;
 import com.ym.traegergill.tools.SharedPreferencesUtils;
 import com.ym.traegergill.tools.WifiUtil;
 import com.ym.traegergill.tuya.utils.DialogUtil;
+import com.ym.traegergill.tuya.utils.ProgressUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -94,7 +100,7 @@ public class MyFragment extends BaseFragment {
     private List<MyFragmentBean> infos;
     MyFragmentRvAdapter adapter;
     private UpdateUserStatusReceiver updateUserStatusReceiver;
-
+    private boolean needUpdate = false;
     private SharedPreferencesUtils spUtils;
     class UpdateUserStatusReceiver extends BroadcastReceiver {
         @Override
@@ -124,9 +130,67 @@ public class MyFragment extends BaseFragment {
         intentFilter.addAction(TraegerGillBroadcastHelper.ACTION_TEST_WIFI);
         updateUserStatusReceiver = new UpdateUserStatusReceiver();
         getActivity().registerReceiver(updateUserStatusReceiver, intentFilter);
+    }
+    private void netAppVersion() {
+        StringCallback callback = new StringCallback() {
+            @Override
+            public void onResponse(boolean isFromCache, String s, Request request, @Nullable Response response) {
+                TLog("isFromCache : " + isFromCache+"  json : " + s);
+                if(isFromCache){
+                    showToastError(getString(R.string.network_error));
+                    return;
+                }
+                try {
+                    JSONObject obj = new JSONObject(s);
+                    TLog(obj.optString("msg"));
+                    if (obj.optInt("code") == 200) {
+                        String content = obj.optString("content");
+                        String nowVer = getVersion();
+                        if(content.equals(nowVer)){
+
+                        }else{
+                            needUpdate = true;
+                            setMessagePoint();
+                           /*DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.update_ready_download_title)
+                                   , getActivity().getString(R.string.Confirm), getActivity().getString(R.string.action_close), null, new DialogInterface.OnClickListener() {
+                                       @Override
+                                       public void onClick(DialogInterface dialog, int which) {
+                                           switch (which) {
+                                               case DialogInterface.BUTTON_POSITIVE:
+                                                   break;
+                                               case DialogInterface.BUTTON_NEGATIVE:
+                                                   break;
+                                           }
+                                       }
+                                   }).show();*/
+                        }
+                    }else{
+                        showToastError(obj.optString("msg"));
+                        TLog(obj.optString("msg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onAfter(boolean isFromCache, @Nullable String s, Call call, @Nullable Response response, @Nullable Exception e) {
+                super.onAfter(isFromCache, s, call, response, e);
+                ProgressUtil.hideLoading();
+            }
+        };
+        HttpParams httpParams = new HttpParams();
+        MyNetTool.netHttpParams(getActivity(), URLs.getAppVersion,callback,httpParams);
 
     }
 
+    private void setMessagePoint(){
+        if(needUpdate && infos!=null){
+            infos.get(infos.size()-1).setFlag(true);
+            adapter.notifyDataSetChanged();
+        }
+
+
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -143,6 +207,9 @@ public class MyFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_my, container, false);
         unbinder = ButterKnife.bind(this, view);
+        if(OUtil.isNetworkConnected(getActivity())){
+            netAppVersion();
+        }
         init();
         return view;
     }
@@ -179,11 +246,11 @@ public class MyFragment extends BaseFragment {
         spUtils = SharedPreferencesUtils.getSharedPreferencesUtil(getActivity());
         dbUtil = SQLiteDbUtil.getSQLiteDbUtil();
         title.setText("MORE");
-
+        String[] resS = getResources().getStringArray(R.array.SettingList);
         if (infos == null) {
             infos = new ArrayList<>();
-            for (int i = 0; i < 10; i++) {
-                infos.add(new MyFragmentBean("SETTING" + i));
+            for (int i = 0; i < resS.length; i++) {
+                infos.add(new MyFragmentBean(resS[i],false));
             }
         }
         if (adapter == null) {
@@ -198,6 +265,9 @@ public class MyFragment extends BaseFragment {
                     spUtils.setValue(Constants.TEST_NUM, position);
                     switch (position) {
                         case 0:
+                                                       startActivity(new Intent(getActivity(), TalkActivity.class));
+                            ((BaseActivity) getActivity()).overridePendingTransition(getActivity(), BaseActivity.ANIMATE_SLIDE_TOP_FROM_BOTTOM);
+
                             /*if(spUtils.getBoolean(Constants.ISLOGIN, false))
                                 netUserInfo(TuyaUser.getUserInstance().getUser().getUid());
                             else
@@ -257,7 +327,6 @@ public class MyFragment extends BaseFragment {
                         }).show();
                 break;*/
             case R.id.support:
-                WifiInfoShow();
                 // startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
                 break;
             case R.id.sign_in:
@@ -295,46 +364,6 @@ public class MyFragment extends BaseFragment {
         }
     }
 
-    private void WifiInfoShow() {
-/*
-
-        info.getBSSID();// 获取BSSID地址。
-
-        info.getSSID(); //获取SSID地址。  需要连接网络的ID
-
-        info.getIpAddress();  //获取IP地址。4字节Int, XXX.XXX.XXX.XXX 每个XXX为一个字节
-
-        info.getMacAddress() ; //获取MAC地址。
-
-        info.getNetworkId() ;  //获取网络ID。
-
-        info.getLinkSpeed() ;  //获取连接速度，可以让用户获知这一信息。
-
-        info.getRssi() ;       //获取RSSI，RSSI就是接受信号强度指示
-
-*/
-
-        if (WifiUtil.isWifiConnected(getActivity())) {
-            WifiManager wifiManager = (WifiManager) getActivity().getSystemService(getActivity().WIFI_SERVICE);
-            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            String str = "已连接WIFI\n WIFI信息 ：  " + wifiInfo.toString() + "\n" +
-                    " WIFI名称 ：  " + wifiInfo.getSSID();
-            showToastSuccess(str);
-            //若想兼容4.4就要这样：
-         /*   String tempSsidString = wifiInfo.getSSID();
-            if (tempSsidString != null && tempSsidString.length() > 2) {
-                List<ScanResult> scanResults=wifiManager.getScanResults();
-                for(ScanResult scanResult:scanResults){
-                    int intfrequency = scanResult.frequency;
-                }
-            }*/
-
-
-        } else {
-            showToastError("未连接WIFI 跳转!");
-            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-        }
-    }
 
     private void netUserInfo(final String uid) {
         StringCallback callback = new StringCallback() {
@@ -379,6 +408,19 @@ public class MyFragment extends BaseFragment {
                             }
                         }
                     }).show();
+        }
+    }
+
+
+    public String getVersion() {
+        try {
+            PackageManager manager = getActivity().getPackageManager();
+            PackageInfo info = manager.getPackageInfo(getActivity().getPackageName(), 0);
+            String version = info.versionName;
+            return version;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "null";
         }
     }
 }

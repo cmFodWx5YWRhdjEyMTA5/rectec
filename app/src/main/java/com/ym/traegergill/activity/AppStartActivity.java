@@ -200,7 +200,7 @@ public class AppStartActivity extends BaseActivity {
         //initStatusBar(this);
         view = View.inflate(this, R.layout.app_start, null);
         setContentView(view);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
         netSplashPicture();
     }
 

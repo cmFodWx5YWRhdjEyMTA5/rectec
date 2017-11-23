@@ -42,7 +42,7 @@ public class TryConnectDeviceActivity extends BaseActivity implements IECBindVie
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_try_connect_device);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
         init();
     }
 

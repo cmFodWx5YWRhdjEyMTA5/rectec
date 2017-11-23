@@ -64,9 +64,14 @@ public class MyFragmentRvAdapter extends RecyclerView.Adapter<MyFragmentRvAdapte
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.textFunction.setText(mList.get(position).getName());
         holder.itemView.setOnClickListener(this);
+        if(mList.get(position).isFlag()){
+            holder.messageIcon.setVisibility(View.VISIBLE);
+        }else{
+            holder.messageIcon.setVisibility(View.GONE);
+        }
+
 
     }
-
     @Override
     public int getItemCount() {
         return mList.size();
@@ -81,11 +86,12 @@ public class MyFragmentRvAdapter extends RecyclerView.Adapter<MyFragmentRvAdapte
     public static class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.text_function)
         TextView textFunction;
+        @BindView(R.id.message_icon)
+        ImageView messageIcon;
 
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
-
         }
     }
 

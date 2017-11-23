@@ -58,7 +58,7 @@
             android:layout_alignParentRight="true"
             android:text="FILTER"
             android:textColor="@color/white"
-            android:textSize="15sp"
+            android:textSize="17sp"
             android:paddingRight="16dp"
             />
     </RelativeLayout>

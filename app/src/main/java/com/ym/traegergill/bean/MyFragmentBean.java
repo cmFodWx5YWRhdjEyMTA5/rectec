@@ -6,9 +6,19 @@ package com.ym.traegergill.bean;
 
 public class MyFragmentBean {
     private String name;
+    private boolean flag;
 
-    public MyFragmentBean(String name) {
+    public boolean isFlag() {
+        return flag;
+    }
+
+    public void setFlag(boolean flag) {
+        this.flag = flag;
+    }
+
+    public MyFragmentBean(String name,boolean flag ) {
         this.name = name;
+        this.flag = flag;
     }
 
     public String getName() {

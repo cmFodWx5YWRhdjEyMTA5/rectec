@@ -51,7 +51,7 @@ public class MiniFeedRateActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mini_feed_rate);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
         init();
     }
 

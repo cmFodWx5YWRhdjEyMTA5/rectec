@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:layout_collapseMode="parallax"
-    android:background="@drawable/view_press"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -42,6 +41,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="21dp"
             android:layout_toRightOf="@id/hi_account"
+            android:visibility="gone"
             android:src="@drawable/my_icon_arrow" />
     </RelativeLayout>
 

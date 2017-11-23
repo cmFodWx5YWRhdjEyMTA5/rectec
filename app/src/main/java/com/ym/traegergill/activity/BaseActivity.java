@@ -18,6 +18,7 @@ import com.ym.traegergill.tools.OUtil;
 import com.ym.traegergill.tools.StatusBarTool;
 import com.ym.traegergill.tools.SystemTool;
 
+import butterknife.Unbinder;
 import okhttp3.OkHttpClient;
 
 /**
@@ -25,7 +26,7 @@ import okhttp3.OkHttpClient;
  */
 
 public class BaseActivity extends AppCompatActivity {
-
+    protected Unbinder unbinder;
     /** 日志输出标志 **/
     protected final String TAG =
             this.getClass().getSimpleName();
@@ -121,5 +122,10 @@ public class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         OkHttpUtils.getInstance().cancelTag(getActivity());
+        if(unbinder!=null){
+            unbinder.unbind();
+            TLog("===unbinder===");
+        }
+
     }
 }

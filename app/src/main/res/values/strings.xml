@@ -45,6 +45,15 @@
         <item>SHIT</item>-->
     </string-array>
 
+    <string-array name="SettingList">
+        <item>What\'s New</item>
+        <item>My Backyard</item>
+        <item>My Wishlist</item>
+        <item>Social Media links</item>
+        <item>Share the Smoke</item>
+        <item>Notes</item>
+    </string-array>
+    What’s New
    <!-- behavior-->
     <string name="bye_burger_float_behavior">com.ym.traegergill.behavior.ByeBurgerFloatButtonBehavior</string>
     <string name="bye_burger_bottom_behavior">com.ym.traegergill.behavior.ByeBurgerBottomBehavior</string>

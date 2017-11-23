@@ -75,7 +75,7 @@ public class TempChartActivity extends BaseActivity implements OnChartGestureLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temp_chart);
         initStatusBar(this);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
         title.setText(getString(R.string.Temperature_Chart));
         initData();
         initChart();

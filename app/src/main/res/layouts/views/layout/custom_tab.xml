@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:layout_weight="1"
-    android:orientation="vertical">
-
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:orientation="vertical">
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
@@ -25,4 +27,15 @@
         android:singleLine="true"
         android:textColor="@color/white"
         android:textSize="11sp"/>
-</LinearLayout>
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/message_icon"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="7dp"
+        android:layout_marginRight="3dp"
+        android:visibility="gone"
+        android:src="@drawable/dot_red" />
+</RelativeLayout>

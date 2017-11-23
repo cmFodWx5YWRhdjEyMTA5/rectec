@@ -56,7 +56,7 @@ public class TempCalibrationActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temp_calibration);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
         init();
     }
 

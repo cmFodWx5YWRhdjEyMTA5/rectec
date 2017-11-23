@@ -56,7 +56,7 @@ public class DevicesActivity extends BaseActivity implements IDeviceListView {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_devices);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
         init();
     }
 
@@ -80,7 +80,7 @@ public class DevicesActivity extends BaseActivity implements IDeviceListView {
     }
 
     private void init() {
-        title.setText(getString(R.string.home_my_device));
+        title.setText(getString(R.string.home_my_device).toUpperCase());
         ProgressUtil.showLoading(this,"loading..");
         new Handler().postDelayed(new Runnable() {//定义延时任务模仿网络请求
             @Override

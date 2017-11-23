@@ -82,7 +82,7 @@ public class CreateAccountActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
         initStatusBar(this);
         init();
         initListener();

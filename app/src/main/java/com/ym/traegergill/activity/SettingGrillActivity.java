@@ -49,7 +49,7 @@ public class SettingGrillActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_grill);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
         init();
     }
 

@@ -204,7 +204,7 @@ public class RemoteControlActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         initStatusBar(this);
         setContentView(R.layout.activity_remote_control);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
         init();
     }
 

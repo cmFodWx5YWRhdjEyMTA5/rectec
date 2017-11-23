@@ -66,17 +66,17 @@ public class MainActivity extends BaseActivity {
     private List<Fragment> fragments;
     private ByeBurgerBehavior mBehavior;
     private List<AdInfo> advList = null;
+    private boolean needUpdate = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mainActivity = this;
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
         initViewPager();
         if(OUtil.isNetworkConnected(getActivity())){
             netAppVersion();
         }
-
 
     }
 
@@ -96,9 +96,11 @@ public class MainActivity extends BaseActivity {
                         String content = obj.optString("content");
                         String nowVer = getVersion();
                        if(content.equals(nowVer)){
-                           netPromotionPicture();
+
                        }else{
-                           DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.update_ready_download_title)
+                           needUpdate = true;
+                           setMessagePoint();
+                           /*DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.update_ready_download_title)
                                    , getActivity().getString(R.string.Confirm), getActivity().getString(R.string.action_close), null, new DialogInterface.OnClickListener() {
                                        @Override
                                        public void onClick(DialogInterface dialog, int which) {
@@ -109,7 +111,7 @@ public class MainActivity extends BaseActivity {
                                                    break;
                                            }
                                        }
-                                   }).show();
+                                   }).show();*/
                        }
                     }else{
                         showToastError(obj.optString("msg"));
@@ -127,6 +129,7 @@ public class MainActivity extends BaseActivity {
         };
         HttpParams httpParams = new HttpParams();
         MyNetTool.netHttpParams(getActivity(), URLs.getAppVersion,callback,httpParams);
+        netPromotionPicture();
 
     }
 
@@ -169,7 +172,6 @@ public class MainActivity extends BaseActivity {
         };
         HttpParams httpParams = new HttpParams();
         MyNetTool.netHttpParams(getActivity(), URLs.getPromotionPicture,callback,httpParams);
-
     }
 
 
@@ -211,18 +213,24 @@ public class MainActivity extends BaseActivity {
                     tabView.setTag(i);
                     if (i == 2) {
                         tabView.setClickable(false);
-                    } else {
+                    }else{
                         tabView.setOnClickListener(mTabOnClickListener);
                     }
-
                 }
             }
             tabLayout.addTab(tab, i);
         }
 //        viewPager.setCurrentItem(1);
         tabLayout.getTabAt(0).getCustomView().setSelected(true);
+        setMessagePoint();
     }
-
+    private void setMessagePoint(){
+        TabLayout.Tab tab = tabLayout.getTabAt(4);
+        if(tab!=null && needUpdate){
+            View tabView = (View)tabLayout.getTabAt(4).getCustomView().getParent();
+            tabView.findViewById(R.id.message_icon).setVisibility(View.VISIBLE);
+        }
+    }
     private boolean mIsExit;
 
     @Override
