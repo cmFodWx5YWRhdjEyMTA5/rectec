@@ -17,6 +17,7 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="@style/BaseAppTheme">
+        <item name="android:windowBackground">@color/gray_bgf3</item>
     </style>
     <style name="AppFullTheme" parent="@style/BaseAppTheme">
     </style>

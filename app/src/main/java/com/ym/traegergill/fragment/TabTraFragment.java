@@ -60,7 +60,6 @@ public class TabTraFragment extends BaseFragment {
     MagicIndicator tabLayout;
     @BindView(R.id.viewPager)
     ViewPager viewPager;
-    Unbinder unbinder;
     @BindView(R.id.title)
     TextView title;
 
@@ -78,26 +77,10 @@ public class TabTraFragment extends BaseFragment {
     }
 
     private void initTitle() {
-        title.setText("RECTECGILLS");
+        title.setText("RECTECGRILLS");
         titles = new ArrayList<>();
-        if(OUtil.isNetworkConnected(getActivity())){
-            netTitle();
-        }else{
-            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
-                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    System.exit(0);
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    initTitle();
-                                    break;
-                            }
-                        }
-                    }).show();
-        }
+        netTitle();
+
     }
     private void netTitle() {
         ProgressUtil.showLoading(getActivity(),getString(R.string.loading));
@@ -131,20 +114,19 @@ public class TabTraFragment extends BaseFragment {
         };
 
         if(!MyNetTool.netHttpParams(getActivity(),URLs.findSharePlatformAll,callback,params)){
-            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
-                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    System.exit(0);
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    netTitle();
-                                    break;
-                            }
-                        }
-                    }).show();
+            showRenetDialog(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            netTitle();
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            System.exit(0);
+                            break;
+                    }
+                }
+            });
         }
 
     }

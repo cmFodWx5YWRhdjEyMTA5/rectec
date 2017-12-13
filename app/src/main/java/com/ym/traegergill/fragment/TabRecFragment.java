@@ -288,20 +288,20 @@ public class TabRecFragment extends BaseFragment {
         ProgressUtil.showLoading(getContext(),getString(R.string.loading));
         HttpParams params = new HttpParams();
         if(!MyNetTool.netHttpParams(getActivity(), URLs.findFilterListGroupByFilterType,callback,params)){
-            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
-                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    System.exit(0);
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    netTabData();
-                                    break;
-                            }
-                        }
-                    }).show();
+            showRenetDialog(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            netTabData();
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            System.exit(0);
+                            break;
+                    }
+                }
+            });
+
         }
 
     }

@@ -122,20 +122,18 @@ public class SetUpActivity extends BaseActivity {
             }
         };
         if(!MyNetTool.netCross(getActivity(),TuyaUser.getUserInstance().getUser().getUid(), URLs.quit,callback)){
-            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
-                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    System.exit(0);
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    netQuit();
-                                    break;
-                            }
-                        }
-                    }).show();
+            showRenetDialog(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            netQuit();
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            break;
+                    }
+                }
+            });
         }
     }
 

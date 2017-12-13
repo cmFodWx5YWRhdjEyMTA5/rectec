@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.yalantis.phoenix.PullToRefreshView;
 import com.ym.traegergill.R;
+import com.ym.traegergill.tools.Constants;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,7 +31,7 @@ public class H5ShopFragment extends BaseFragment {
 
     Unbinder unbinder;
 
-    String url = "http://www.rectecgrills.com/";
+    String url = Constants.SHOP_URL;
     @BindView(R.id.back)
     ImageView back;
     @BindView(R.id.title)

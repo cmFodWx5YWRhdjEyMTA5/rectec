@@ -15,7 +15,8 @@ public class TagBean {
     public void setId(int id) {
         this.id = id;
     }
-
+    public TagBean(){
+    }
     public TagBean(String name){
         this.name = name;
     }

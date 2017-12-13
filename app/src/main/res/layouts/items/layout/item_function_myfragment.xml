@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:paddingLeft="15dp"
     android:paddingRight="15dp"
-    android:background="@drawable/view_press"
+    android:background="@drawable/view_white_press"
     android:orientation="vertical">
     <View
         android:layout_width="match_parent"

@@ -27,6 +27,7 @@ import com.ym.traegergill.tools.Constants;
 import com.ym.traegergill.tools.GlideLoadUtil;
 import com.ym.traegergill.tools.MyNetTool;
 import com.ym.traegergill.tools.OUtil;
+import com.ym.traegergill.tools.RegularUtils;
 import com.ym.traegergill.tuya.utils.DialogUtil;
 
 import org.json.JSONException;
@@ -100,24 +101,26 @@ public class ItemsDetailActivity extends BaseActivity {
             }
         };
         if(!MyNetTool.netHttpParams(getActivity(),URLs.findRecipeShareById,callback,params)){
-            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
-                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    System.exit(0);
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    netRecipeShareData();
-                                    break;
-                            }
-                        }
-                    }).show();
+            showRenetDialog(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            netRecipeShareData();
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            ItemsDetailActivity.this.finishAfterTransition();
+                            break;
+                    }
+                }
+            });
         }
     }
 
     private void setValue(JSONObject content) {
+        if(isDestroyed() || isFinishing()){
+            return;
+        }
         String url = content.optString("shareMainPic");
         String shareContent = content.optString("shareContent");
         String title = content.optString("title");
@@ -141,8 +144,19 @@ public class ItemsDetailActivity extends BaseActivity {
                 .centerCrop()
                 .diskCacheStrategy(DiskCacheStrategy.ALL);
         GlideLoadUtil.load(getActivity(), url, requestOptions, ivImg);
-        recipeid = content.optInt("recipeid", -1);
+       /* recipeid = content.optInt("recipeid", -1);
         if (recipeid != -1) {
+
+
+
+            llRecipes.setVisibility(View.VISIBLE);
+            GlideLoadUtil.load(getActivity(), content.optString("recipePic"), options, recipesImg);
+            desInImg.setText(content.optString("recipeName"));
+        } else {
+            llRecipes.setVisibility(View.GONE);
+        }*/
+        link = content.optString("link");
+        if(RegularUtils.isURL(link)){
             RequestOptions options = new RequestOptions()
                     .override(width, OUtil.dip2px(getActivity(), 200))
                     .placeholder(Constants.PLACEHOLDER)
@@ -151,16 +165,14 @@ public class ItemsDetailActivity extends BaseActivity {
                     .centerCrop()
                     .diskCacheStrategy(DiskCacheStrategy.ALL);
 
-
             llRecipes.setVisibility(View.VISIBLE);
-            GlideLoadUtil.load(getActivity(), content.optString("recipePic"), options, recipesImg);
-            desInImg.setText(content.optString("recipeName"));
-        } else {
+            GlideLoadUtil.load(getActivity(), url, options, recipesImg);
+            desInImg.setText(shareContent);
+        }else{
             llRecipes.setVisibility(View.GONE);
         }
-
     }
-
+    String link;
 
     @OnClick({R.id.iv_img, R.id.userImg, R.id.recipes_img})
     public void onViewClicked(View view) {
@@ -170,12 +182,13 @@ public class ItemsDetailActivity extends BaseActivity {
             case R.id.userImg:
                 break;
             case R.id.recipes_img:
-                getActivity().startActivity(
-                        new Intent(getActivity(), RecipesDetailActivity.class).putExtra("recipeid", recipeid),
-                        ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                getActivity(),
-                                Pair.create(view, getActivity().getString(R.string.iv_img_transitionName))
-                        ).toBundle());
+                if(RegularUtils.isURL(link)){
+                    Intent intent = new Intent(getActivity(), BrowserActivity.class);
+                    intent.putExtra(BrowserActivity.EXTRA_LOGIN, false);
+                 /*   intent.putExtra(BrowserActivity.EXTRA_TITLE, "RECIPES");*/
+                    intent.putExtra(BrowserActivity.EXTRA_URI, link);
+                    getActivity().startActivity(intent);
+                }
                 break;
         }
     }

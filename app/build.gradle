@@ -11,7 +11,8 @@ android {
         versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk{
-            abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
+          /*  abiFilters "armeabi", "armeabi-v7a", "x86", "mips"*/
+            abiFilters 'armeabi', 'armeabi-v7a', 'armeabi-v8a', 'x86', 'x86_64', 'mips', 'mips64'
         }
         multiDexEnabled true
     }
@@ -24,7 +25,7 @@ android {
     sourceSets {
 
         main {
-            jniLibs.srcDirs = ['libs']
+           /* jniLibs.srcDirs = ['src/jniLibs'];*/
             res.srcDirs =
                     [
                             'src/main/res/layouts/activitys',
@@ -64,6 +65,12 @@ android {
     }
 
 }
+allprojects {
+    repositories {
+        jcenter() // 或者 mavenCentral()
+    }
+}
+
 repositories {
     flatDir {
         dirs 'libs'
@@ -87,7 +94,6 @@ dependencies {
     compile project(path: ':lib:magicindicator')
     compile 'com.lzy.net:okhttputils:1.5.2'
     compile 'com.google.code.gson:gson:2.6.2'
-    compile files('libs/tbs_sdk_thirdapp_v3.5.0.1004_43500_sharewithdownload_withoutGame_obfs_20170801_113025.jar')
     //=====依赖库 必要 ====//
     compile 'com.alibaba:fastjson:1.1.45.android'
     compile 'com.squareup.okhttp3:okhttp-urlconnection:3.2.0'
@@ -99,4 +105,9 @@ dependencies {
     //=====依赖库====//
     compile project(':lib:MPChartLib')
     compile project(':lib:adlibrary')
+    compile 'com.google.android.gms:play-services-location:11.0.4'
+    compile 'com.google.android.gms:play-services-places:11.0.4'
+    compile 'com.google.android.gms:play-services-maps:11.0.4'
+    // MultiDex的依赖
+    compile 'com.android.support:multidex:1.0.0'
 }

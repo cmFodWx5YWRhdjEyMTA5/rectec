@@ -7,25 +7,40 @@
 
     <include layout="@layout/view_toolbar_add"></include>
 
-    <com.yalantis.phoenix.PullToRefreshView
-        android:id="@+id/pull_to_refresh"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout
+
+        <com.yalantis.phoenix.PullToRefreshView
+            android:id="@+id/pull_to_refresh"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/device_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fadingEdge="none"
-            android:overScrollMode="never"></android.support.v7.widget.RecyclerView>
-            <include
-                android:visibility="gone"
-                layout="@layout/ty_data_empty"></include>
-        </LinearLayout>
-    </com.yalantis.phoenix.PullToRefreshView>
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tv_remark"
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone"
+                    android:text="@string/Long_press_remove"
+                    android:textColor="@color/color9999"
+                    android:gravity="center"
+
+                    />
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/device_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fadingEdge="none"
+                    android:overScrollMode="never"></android.support.v7.widget.RecyclerView>
+
+                <include
+                    layout="@layout/ty_data_empty"
+                    android:visibility="gone"></include>
+            </LinearLayout>
+        </com.yalantis.phoenix.PullToRefreshView>
 
 </LinearLayout>

@@ -9,7 +9,7 @@ public class URLs {
     public static final String Evaluation = "http://123.57.162.168:8081/mall/app/goods/evaluation/list.json";
 
     public final static String domain = "http://www.beatyoungs.com";
-    public final static String domain1 = "http://192.168.3.105:8080";
+    public final static String domai1 = "http://192.168.3.104:8080";
     public final static String BASE = domain + "/cookbbq/";
 
     public final static String findSharePlatformAll = BASE + "recipeShare/findSharePlatformAll";
@@ -29,6 +29,7 @@ public class URLs {
     public final static String testCross = BASE + "test/testCross";
     public final static String getUserinfo = "user/getUserinfo";
     public final static String updateUserinfo = "user/updateUserinfo";
+
     public final static String updatePwdWithEmail = "user/updatePwdWithEmail";
     public final static String quit = "user/quit";
 
@@ -39,5 +40,16 @@ public class URLs {
     public final static String findUserRecipeCollection = "recipe/findUserRecipeCollection";
     public final static String onUserDevice ="user/onUserDevice";
     public final static String offUserDevice ="user/offUserDevice";
+
+    public final static String findDistributorTypeAll =BASE+"distributor/findDistributorTypeAll";
+    public final static String findDistributorByType =BASE+"distributor/findDistributorByType";
+    public final static String addFeedback ="feedback/addFeedback";
+
+    public final static String updateDeviceType ="user/updateDeviceType";
+    public final static String addUserDevice = "user/addUserDevice";
+    public final static String findDeviceTypeAll =BASE+"user/findDeviceTypeAll";
+
+
+
 
 }

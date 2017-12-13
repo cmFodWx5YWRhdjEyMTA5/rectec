@@ -5,13 +5,13 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.support.multidex.MultiDex;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.lzy.okhttputils.OkHttpUtils;
-import com.tencent.smtt.sdk.QbSdk;
 import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.api.INeedLoginListener;
 import com.uuch.adlibrary.utils.DisplayUtil;
@@ -51,7 +51,6 @@ public class App extends Application{
         }
         //OkHttpUtils初始化
         OkHttpUtils.init(this);
-
         if (isInitAppkey()) {
             initSdk();
         }
@@ -96,5 +95,9 @@ public class App extends Application{
         }
         return true;
     }
-
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(base);
+    }
 }

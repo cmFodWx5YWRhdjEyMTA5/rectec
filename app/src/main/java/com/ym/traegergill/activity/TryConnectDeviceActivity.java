@@ -192,8 +192,8 @@ public class TryConnectDeviceActivity extends BaseActivity implements IECBindVie
             super.finish();
             return;
         }
-        DialogUtil.customDialog(getActivity(), null, "正在连接中,确认退出?"
-                , "退出", "再想想", null, new DialogInterface.OnClickListener() {
+        DialogUtil.customDialog(getActivity(), null, getString(R.string.In_connection_confirm_exit)
+                 , getString(R.string.Confirm), getString(R.string.cancel), null, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
@@ -201,7 +201,7 @@ public class TryConnectDeviceActivity extends BaseActivity implements IECBindVie
                                 finish(true);
                                 break;
                             case DialogInterface.BUTTON_NEGATIVE:
-                                ToastUtil.shortToast(getActivity(),"你好好想想");
+
                                 break;
                         }
                     }

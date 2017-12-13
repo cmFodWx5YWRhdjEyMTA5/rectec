@@ -150,6 +150,41 @@
         android:background="@color/graydis"
         ></View>
     <LinearLayout
+        android:id="@+id/ll_update_devices_model"
+        android:background="@drawable/view_press"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:layout_height="50dp">
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/Update_the_Device_Model"
+            android:textColor="@color/color32"
+            android:textSize="16sp"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/my_icon_arrow"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="16dp"
+            />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="15dp"
+        android:background="@color/graydis"
+        ></View>
+
+    <LinearLayout
         android:id="@+id/ll_set_name"
         android:background="@drawable/view_press"
         android:orientation="horizontal"

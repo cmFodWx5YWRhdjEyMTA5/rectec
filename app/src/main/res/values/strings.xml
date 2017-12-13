@@ -46,14 +46,13 @@
     </string-array>
 
     <string-array name="SettingList">
-        <item>What\'s New</item>
-        <item>My Backyard</item>
-        <item>My Wishlist</item>
-        <item>Social Media links</item>
-        <item>Share the Smoke</item>
-        <item>Notes</item>
+        <item>DEALER LOCATOR</item>
+        <item>FEEDBACK</item>
+        <item>SERVICE &#038; WARRANTY</item>
+        <item>TERMS AND CONDITIONS</item>
+        <item>VERSION</item>
+<!--        <item>TEST</item>-->
     </string-array>
-    What’s New
    <!-- behavior-->
     <string name="bye_burger_float_behavior">com.ym.traegergill.behavior.ByeBurgerFloatButtonBehavior</string>
     <string name="bye_burger_bottom_behavior">com.ym.traegergill.behavior.ByeBurgerBottomBehavior</string>
@@ -115,6 +114,7 @@ The Android Studio version has been updated to version 2.0 Preview4, and the ADT
     <string name="Temperature_Calibration">Temperature Calibration</string>
     <string name="Minimum_Feed_Rate">Minimum Feed Rate</string>
     <string name="Set_the_Device_Name">Set the Device Name</string>
+    <string name="Update_the_Device_Model">Update the Device Model</string>
     <string name="Temperature_Chart">Temperature Chart</string>
     <string name="temp_calibration_step1_text">1) Place indenpendent device probe in center of grill 1\"above grate.</string>
     <string name="temp_calibration_step2_text">2) Set grill to 350℉ and preheat for 1 hour.</string>
@@ -144,7 +144,7 @@ The Android Studio version has been updated to version 2.0 Preview4, and the ADT
     <string name="Yes">Yes</string>
     <string name="No">No</string>
     <string name="wifi_psw_is_empty">Wi-Fi password is empty.</string>
-
+    <string name="please_give_your_feedback">Please give your feedback</string>
 
     <string name="about">About</string>
     <string name="action_back">Back</string>
@@ -392,6 +392,29 @@ The Android Studio version has been updated to version 2.0 Preview4, and the ADT
     <string name="wpa_must_with_eghit_characters">WPA passphrase length must be minimum 8
         characters
     </string>
+    <string name="CALL">CALL </string>
+
+    <string name="Long_press_remove">Long press remove the Device</string>
+
+    <!--    Permissions    -->
+    <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
+    <string name="location_permission_denied">This sample requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'Google Maps API Demos\'.</string>
+    <string name="permission_required_toast">Location permission is required for this demo.</string>
+
+
+
+      <string name="permission_failed_tip">The current application lacks the necessary permissions, please grant the
+        permission in phone \"Settings-Applications-%1$s-Permissions\"
+    </string>
+    <string name="In_connection_confirm_exit">Device in connection, confirm exit?</string>
+    <string name="POWER_FAILURE">POWER FAILURE</string>
+    <string name="IGNITE_FAILURE">IGNITE FAILURE</string>
+    <string name="RTD_FAILURE">RTD FAILURE</string>
+    <string name="EXTREME_SMOKE">EXTREME SMOKE</string>
+    <string name="FULL">FULL</string>
+    <string name="LOW">LOW</string>
+
+
 
 
   <!--  tuya-->
@@ -545,6 +568,8 @@ The Android Studio version has been updated to version 2.0 Preview4, and the ADT
     <string name="ty_offline_title">The device is offline</string>
     <string name="ty_pattern_auto_des">Turn on to add new timer</string>
     <string name="ty_pattern_manual">Manual</string>
+
+
     <string name="ty_permission_tip_contact">Failed to obtain contact information, please grant the
         permission in phone \"Settings-Applications-%1$s-Permissions\"
     </string>

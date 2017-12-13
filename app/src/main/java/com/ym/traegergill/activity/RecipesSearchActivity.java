@@ -14,26 +14,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.lzy.okhttputils.callback.StringCallback;
-import com.lzy.okhttputils.model.HttpParams;
 import com.ym.traegergill.R;
-import com.ym.traegergill.modelBean.FilterGroupByFilterTypeModel;
-import com.ym.traegergill.net.URLs;
-import com.ym.traegergill.tools.MyNetTool;
 import com.ym.traegergill.tools.OUtil;
-import com.ym.traegergill.tuya.utils.DialogUtil;
-import com.ym.traegergill.tuya.utils.ProgressUtil;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import okhttp3.Call;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * Created by Administrator on 2017/11/17.

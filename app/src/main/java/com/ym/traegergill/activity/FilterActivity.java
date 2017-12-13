@@ -106,21 +106,18 @@ public class FilterActivity extends BaseActivity {
         HttpParams params = new HttpParams();
         ProgressUtil.showLoading(this,"loading..");
         if(!MyNetTool.netHttpParams(getActivity(),URLs.findFilterListGroupByFilterType,callback,params)){
-            ProgressUtil.hideLoading();
-            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
-                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    System.exit(0);
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    netFilterData();
-                                    break;
-                            }
-                        }
-                    }).show();
+            showRenetDialog(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            netFilterData();
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            break;
+                    }
+                }
+            });
         }
     }
 

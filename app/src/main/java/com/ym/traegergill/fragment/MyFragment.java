@@ -31,22 +31,24 @@ import com.tuya.smart.android.user.bean.User;
 import com.tuya.smart.sdk.TuyaUser;
 import com.ym.traegergill.R;
 import com.ym.traegergill.activity.BaseActivity;
+import com.ym.traegergill.activity.BrowserActivity;
 import com.ym.traegergill.activity.CreateAccountActivity;
+import com.ym.traegergill.activity.DealerLocatorActivity;
+import com.ym.traegergill.activity.FeedBackActivity;
 import com.ym.traegergill.activity.SetUpActivity;
+import com.ym.traegergill.activity.ShowVersionActivity;
 import com.ym.traegergill.activity.SignInActivity;
-import com.ym.traegergill.activity.TalkActivity;
+import com.ym.traegergill.activity.TempChartActivity;
 import com.ym.traegergill.adapter.MyFragmentRvAdapter;
 import com.ym.traegergill.bean.MyFragmentBean;
 import com.ym.traegergill.broadcast.TraegerGillBroadcastHelper;
 import com.ym.traegergill.db.SQLiteDbUtil;
-import com.ym.traegergill.db.bean.UserData;
 import com.ym.traegergill.net.URLs;
 import com.ym.traegergill.tools.CircularAnimUtil;
 import com.ym.traegergill.tools.Constants;
 import com.ym.traegergill.tools.MyNetTool;
 import com.ym.traegergill.tools.OUtil;
 import com.ym.traegergill.tools.SharedPreferencesUtils;
-import com.ym.traegergill.tools.WifiUtil;
 import com.ym.traegergill.tuya.utils.DialogUtil;
 import com.ym.traegergill.tuya.utils.ProgressUtil;
 
@@ -112,11 +114,6 @@ public class MyFragment extends BaseFragment {
                 }else{
                     updateUI();
                 }
-            } else if (action.equals(TraegerGillBroadcastHelper.ACTION_TEST_WIFI)) {
-                //updateUI();
-                String data = intent.getStringExtra("data");
-                showToastSuccess(data);
-                //support.setText(data);
             }
         }
     }
@@ -127,7 +124,6 @@ public class MyFragment extends BaseFragment {
         //注册广播
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(TraegerGillBroadcastHelper.ACTION_UPDATE_USERSTATUS);
-        intentFilter.addAction(TraegerGillBroadcastHelper.ACTION_TEST_WIFI);
         updateUserStatusReceiver = new UpdateUserStatusReceiver();
         getActivity().registerReceiver(updateUserStatusReceiver, intentFilter);
     }
@@ -147,22 +143,14 @@ public class MyFragment extends BaseFragment {
                         String content = obj.optString("content");
                         String nowVer = getVersion();
                         if(content.equals(nowVer)){
-
+                            //=====test=====
+                        /*    needUpdate = true;
+                            setMessagePoint();*/
+                            //=====test=====
                         }else{
                             needUpdate = true;
                             setMessagePoint();
-                           /*DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.update_ready_download_title)
-                                   , getActivity().getString(R.string.Confirm), getActivity().getString(R.string.action_close), null, new DialogInterface.OnClickListener() {
-                                       @Override
-                                       public void onClick(DialogInterface dialog, int which) {
-                                           switch (which) {
-                                               case DialogInterface.BUTTON_POSITIVE:
-                                                   break;
-                                               case DialogInterface.BUTTON_NEGATIVE:
-                                                   break;
-                                           }
-                                       }
-                                   }).show();*/
+
                         }
                     }else{
                         showToastError(obj.optString("msg"));
@@ -179,7 +167,20 @@ public class MyFragment extends BaseFragment {
             }
         };
         HttpParams httpParams = new HttpParams();
-        MyNetTool.netHttpParams(getActivity(), URLs.getAppVersion,callback,httpParams);
+        if(!MyNetTool.netHttpParams(getActivity(), URLs.getAppVersion,callback,httpParams)){
+            showRenetDialog(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            netAppVersion();
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            break;
+                    }
+                }
+            });
+        }
 
     }
 
@@ -262,34 +263,37 @@ public class MyFragment extends BaseFragment {
             adapter.setItemClick(new MyFragmentRvAdapter.OnItemClick() {
                 @Override
                 public void OnClick(RecyclerView parent, View view, int position, MyFragmentBean Info) {
-                    spUtils.setValue(Constants.TEST_NUM, position);
+                    Intent intent;
                     switch (position) {
                         case 0:
-                                                       startActivity(new Intent(getActivity(), TalkActivity.class));
-                            ((BaseActivity) getActivity()).overridePendingTransition(getActivity(), BaseActivity.ANIMATE_SLIDE_TOP_FROM_BOTTOM);
-
-                            /*if(spUtils.getBoolean(Constants.ISLOGIN, false))
-                                netUserInfo(TuyaUser.getUserInstance().getUser().getUid());
-                            else
-                                OUtil.TLog("没有登录");*/
+                            startActivity(new Intent(getActivity(), DealerLocatorActivity.class));
                             break;
-                        case 1:
-                            OUtil.TLog(new Gson().toJson(dbUtil.query(UserData.class)));
+                         case 1:
+                             startActivity(new Intent(getActivity(), FeedBackActivity.class));
                             break;
                         case 2:
-                            dbUtil.drop(UserData.class);
-                            OUtil.TLog("drop");
+                            intent = new Intent(getActivity(), BrowserActivity.class);
+                            intent.putExtra(BrowserActivity.EXTRA_LOGIN, false);
+                            intent.putExtra(BrowserActivity.EXTRA_TITLE, infos.get(position).getName());
+                            intent.putExtra(BrowserActivity.EXTRA_URI, Constants.URL1);
+                            getActivity().startActivity(intent);
                             break;
-                        case 6:
-
-                           /* if(TuyaUser.getUserInstance().isLogin()){
-                                boolean flag = TuyaUser.getUserInstance().removeUser();
-                                TLog(""+flag);
-                                showToastSuccess( ""+flag);
-                            }else{
-                                showToastError("no login");
-                            }*/
+                        case 3:
+                            intent = new Intent(getActivity(), BrowserActivity.class);
+                            intent.putExtra(BrowserActivity.EXTRA_LOGIN, false);
+                            intent.putExtra(BrowserActivity.EXTRA_TITLE, infos.get(position).getName());
+                            intent.putExtra(BrowserActivity.EXTRA_URI, Constants.URL2);
+                            getActivity().startActivity(intent);
                             break;
+                        case 4:
+                            intent = new Intent(getActivity(), ShowVersionActivity.class);
+                            getActivity().startActivity(intent);
+                            break;
+        /*                case 5:
+                            intent = new Intent(getActivity(), TempChartActivity.class);
+                            getActivity().startActivity(intent);
+                            break;*/
+                        default:
                     }
                 }
             });
@@ -310,23 +314,12 @@ public class MyFragment extends BaseFragment {
     @OnClick({R.id.support, R.id.sign_in, R.id.create_account, R.id.setting, R.id.login_layout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-         /*   case R.id.order_history:
-                DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.ez_notSupport_5G_tip)
-                        , getActivity().getString(R.string.ez_notSupport_5G_change), getActivity().getString(R.string.ez_notSupport_5G_continue), null, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which) {
-                                    case DialogInterface.BUTTON_POSITIVE:
-                                        ToastUtil.shortToast(getActivity(),"BUTTON_POSITIVE");
-                                        break;
-                                    case DialogInterface.BUTTON_NEGATIVE:
-                                        ToastUtil.shortToast(getActivity(),"BUTTON_NEGATIVE");
-                                        break;
-                                }
-                            }
-                        }).show();
-                break;*/
             case R.id.support:
+                Intent intent = new Intent(getActivity(), BrowserActivity.class);
+                intent.putExtra(BrowserActivity.EXTRA_LOGIN, false);
+                intent.putExtra(BrowserActivity.EXTRA_TITLE, "Support");
+                intent.putExtra(BrowserActivity.EXTRA_URI, Constants.TUYA_VIEW_HELP);
+                getActivity().startActivity(intent);
                 // startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
                 break;
             case R.id.sign_in:
@@ -394,20 +387,18 @@ public class MyFragment extends BaseFragment {
         };
 
         if(!MyNetTool.netCross(getActivity(),uid,URLs.getUserinfo,callback)){
-            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
-                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    System.exit(0);
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    netUserInfo(uid);
-                                    break;
-                            }
-                        }
-                    }).show();
+            showRenetDialog(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            netUserInfo(uid);
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            break;
+                    }
+                }
+            });
         }
     }
 

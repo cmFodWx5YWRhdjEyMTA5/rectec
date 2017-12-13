@@ -16,6 +16,7 @@ import com.tuya.smart.sdk.TuyaDevice;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IDevListener;
 import com.ym.traegergill.R;
+import com.ym.traegergill.tools.Constants;
 import com.ym.traegergill.tools.OUtil;
 import com.ym.traegergill.tuya.utils.DialogUtil;
 
@@ -61,7 +62,7 @@ public class MiniFeedRateActivity extends BaseActivity {
         mTuyaDevice = new TuyaDevice(mDevId);
         Map<String, Object> list = TuyaUser.getDeviceInstance().getDps(mDevId);
         for (Map.Entry<String, Object> entry : list.entrySet()) {
-            if (entry.getKey().equals("104")) {
+            if (entry.getKey().equals(Constants.Min_feedrate_DPID)) {
                 double temp = Integer.parseInt(entry.getValue().toString()) / 10.0;
                 percent.setText(temp + "");
             }
@@ -80,7 +81,7 @@ public class MiniFeedRateActivity extends BaseActivity {
                 enableViews(false);
                 JSONObject jsonObject = JSONObject.parseObject(dpStr);
                 for (Map.Entry<String, Object> entry : jsonObject.entrySet()) {
-                    if (entry.getKey().equals("104")) {
+                    if (entry.getKey().equals(Constants.Min_feedrate_DPID)) {
                         double temp = Integer.parseInt(entry.getValue().toString()) / 10.0;
                         percent.setText(temp + "");
                     }
@@ -175,7 +176,7 @@ public class MiniFeedRateActivity extends BaseActivity {
                     msg.what = vid;
                     handler.sendMessage(msg);
                 }
-            }, 0, 100, TimeUnit.MILLISECONDS);    //每间隔100ms发送Message
+            }, 0, Constants.LongPress_Send_Time, TimeUnit.MILLISECONDS);    //每间隔100ms发送Message
         }
     }
 
@@ -216,7 +217,7 @@ public class MiniFeedRateActivity extends BaseActivity {
         enableViews(false);
         mHandler.postDelayed(mRunnable, 300);
         HashMap<String, Object> stringObjectHashMap = new HashMap<>();
-        stringObjectHashMap.put("104", value);
+        stringObjectHashMap.put(Constants.Min_feedrate_DPID, value);
         String commandStr = JSON.toJSONString(stringObjectHashMap);
         mTuyaDevice.publishDps(commandStr, new IControlCallback() {
             @Override

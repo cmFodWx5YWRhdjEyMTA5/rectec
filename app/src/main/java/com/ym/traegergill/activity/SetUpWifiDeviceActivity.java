@@ -141,15 +141,15 @@ public class SetUpWifiDeviceActivity extends BaseActivity {
                     OUtil.toastError(getActivity(), getString(R.string.please_connect_to_wifi));
                 } else if (TextUtils.isEmpty(wifiPassword.getText())) {
                     DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.wifi_psw_is_empty)
-                            , getActivity().getString(R.string.ez_notSupport_5G_change), getActivity().getString(R.string.ez_notSupport_5G_continue), null, new DialogInterface.OnClickListener() {
+                             , getString(R.string.ez_notSupport_5G_continue), getString(R.string.ez_notSupport_5G_change), null, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     switch (which) {
                                         case DialogInterface.BUTTON_POSITIVE:
-                                            //startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                                            goNext();
                                             break;
                                         case DialogInterface.BUTTON_NEGATIVE:
-                                            goNext();
+                                            wifiPassword.requestFocus();
                                             break;
                                     }
                                 }
@@ -160,15 +160,15 @@ public class SetUpWifiDeviceActivity extends BaseActivity {
                     goNext();
                 } else {
                     DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.ez_notSupport_5G_tip)
-                            , getActivity().getString(R.string.ez_notSupport_5G_change), getActivity().getString(R.string.ez_notSupport_5G_continue), null, new DialogInterface.OnClickListener() {
+                             , getString(R.string.ez_notSupport_5G_continue), getString(R.string.ez_notSupport_5G_change), null, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     switch (which) {
                                         case DialogInterface.BUTTON_POSITIVE:
-                                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                                            goNext();
                                             break;
                                         case DialogInterface.BUTTON_NEGATIVE:
-                                            goNext();
+                                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
                                             break;
                                     }
                                 }

@@ -287,36 +287,33 @@ public class ShowRecipesFragment extends BaseFragment {
             params.put("recipeFilterListStr", recipeFilterListStr);
         }
         if (filterid != Constants.MAIN_INGREDIENT_FAVORITES && !MyNetTool.netHttpParams(getActivity(), url, callback, params)) {
-            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
-                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    System.exit(0);
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    initData(isMore);
-                                    break;
-                            }
-                        }
-                    }).show();
+            showRenetDialog(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            initData(isMore);
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            break;
+                    }
+                }
+            });
+
         } else if (filterid == Constants.MAIN_INGREDIENT_FAVORITES) {
             if (!MyNetTool.netCross(getActivity(), TuyaUser.getUserInstance().getUser().getUid(), url, callback)) {
-                DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
-                        , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which) {
-                                    case DialogInterface.BUTTON_POSITIVE:
-                                        System.exit(0);
-                                        break;
-                                    case DialogInterface.BUTTON_NEGATIVE:
-                                        initData(isMore);
-                                        break;
-                                }
-                            }
-                        }).show();
+                showRenetDialog(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        switch (which) {
+                            case DialogInterface.BUTTON_POSITIVE:
+                                initData(isMore);
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                break;
+                        }
+                    }
+                });
             }
         }
 

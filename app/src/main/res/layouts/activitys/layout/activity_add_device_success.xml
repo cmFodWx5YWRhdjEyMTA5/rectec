@@ -48,11 +48,12 @@
             android:layout_marginRight="15dp"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="11dp"
-            android:layout_marginBottom="42dp"
-            android:background="@drawable/orange_btn_corners_bg"
-            android:text="Skip"
+            android:layout_marginBottom="22dp"
+            android:background="@drawable/enable_btn_corners_bg"
+            android:text="@string/next"
             android:textColor="@color/white"
             android:textSize="18sp"
+            android:enabled="false"
             />
         <EditText
             android:id="@+id/et_value"
@@ -60,7 +61,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:paddingLeft="16.5dp"
-            android:layout_marginRight="16.5dp"
             android:background="@drawable/edit_orange_backg"
             android:textColor="@color/color444"
             android:hint="My WiFIRE"
@@ -69,7 +69,21 @@
             android:translationZ="1dp"
             android:textSize="17sp" />
 
-
+        <EditText
+            android:id="@+id/et_device_model"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16.5dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="15dp"
+            android:drawableRight="@drawable/my_icon_arrow"
+            android:background="@drawable/edit_orange_backg"
+            android:textColor="@color/color444"
+            android:hint="DEVICE MODEL SELECT"
+            android:textColorHint="@color/color9999"
+            android:layout_above="@id/et_value"
+            android:focusable="false"
+            android:textSize="17sp" />
 
     </RelativeLayout>
 </LinearLayout>

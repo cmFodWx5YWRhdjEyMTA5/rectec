@@ -26,6 +26,7 @@ import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.TuyaUser;
 import com.ym.traegergill.R;
 import com.ym.traegergill.net.URLs;
+import com.ym.traegergill.tools.Constants;
 import com.ym.traegergill.tools.CountryUtils;
 import com.ym.traegergill.tools.MyCountDownTimer;
 import com.ym.traegergill.tools.MyNetTool;
@@ -144,7 +145,7 @@ public class CreateAccountActivity extends BaseActivity {
         etFirstName.setText("ouyang");
         etLastName.setText("xiao111");*/
 
-        timer = new MyCountDownTimer(60000, 1000, getCode);
+        timer = new MyCountDownTimer(Constants.GET_CODE_TIME, 1000, getCode);
         startIntroAnimation(back, 1, -1);
         startIntroAnimation(mainLoginView, 3, 1);
         initCountryInfo();
@@ -252,20 +253,18 @@ public class CreateAccountActivity extends BaseActivity {
         };
 
         if(!MyNetTool.netHttpParams(getActivity(),URLs.signEmailUser,callback,params)){
-            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
-                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    System.exit(0);
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    netMyCreateAccount();
-                                    break;
-                            }
-                        }
-                    }).show();
+            showRenetDialog(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            netMyCreateAccount();
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            break;
+                    }
+                }
+            });
         }
     }
 
@@ -318,20 +317,18 @@ public class CreateAccountActivity extends BaseActivity {
         };
 
         if(!MyNetTool.netHttpParams(getActivity(),URLs.updateTuya,callback,params)){
-            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
-                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    System.exit(0);
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    updateToMyAccount(uid,token);
-                                    break;
-                            }
-                        }
-                    }).show();
+            showRenetDialog(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            updateToMyAccount(uid,token);
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            break;
+                    }
+                }
+            });
         }
 
     }
@@ -365,20 +362,18 @@ public class CreateAccountActivity extends BaseActivity {
         };
 
         if(!MyNetTool.netHttpParams(getActivity(),URLs.sendEmailCode,callback,params)){
-            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
-                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    System.exit(0);
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    netCode(email);
-                                    break;
-                            }
-                        }
-                    }).show();
+            showRenetDialog(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            netCode(email);
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            break;
+                    }
+                }
+            });
         }
 
     }

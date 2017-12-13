@@ -16,7 +16,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
-
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
     <!-- 定位 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -39,6 +39,15 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+      <!--  //开发者申请的key-->
+<!--        <meta-data android:name="com.amap.api.v2.apikey"
+            android:value="9ffdf58c4c445633fbc13856b11a2687">
+
+        </meta-data>-->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
 
 
         <meta-data
@@ -130,7 +139,11 @@
         <activity android:name=".activity.BrowserActivity" />
         <activity android:name=".activity.TalkActivity" />
         <activity android:name=".activity.AddTalkActivity" />
-
+        <activity android:name=".activity.DealerLocatorActivity" />
+        <activity android:name=".activity.FeedBackActivity" />
+        <activity android:name=".activity.MapsActivity" />
+        <activity android:name=".activity.ShowVersionActivity" />
+        <activity android:name=".activity.TestActivity" />
 
         <receiver android:name="com.ym.traegergill.broadcast.WifiBroadcastReceiver">
             <intent-filter>

@@ -10,6 +10,11 @@ import com.lzy.okhttputils.callback.StringCallback;
 import com.lzy.okhttputils.model.HttpParams;
 import com.ym.traegergill.net.URLs;
 
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.regex.Pattern;
+
 /**
  * Created by Administrator on 2017/11/7.
  */
@@ -63,6 +68,8 @@ public class MyNetTool {
         } else {
             return false;
         }
-
     }
+
+
+
 }

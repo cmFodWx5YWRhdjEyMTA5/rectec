@@ -145,7 +145,7 @@ public class SignInActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.sign_in:
-                login();
+                    login();
                 break;
             case R.id.forget:
                 getActivity().startActivity(new Intent(getActivity(), ForgetPswActivity.class));

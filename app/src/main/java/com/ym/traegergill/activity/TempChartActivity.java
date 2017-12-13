@@ -3,8 +3,10 @@ package com.ym.traegergill.activity;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -79,10 +81,6 @@ public class TempChartActivity extends BaseActivity implements OnChartGestureLis
         title.setText(getString(R.string.Temperature_Chart));
         initData();
         initChart();
-        initListener();
-    }
-
-    private void initListener() {
     }
 
     int type = -1;
@@ -111,6 +109,9 @@ public class TempChartActivity extends BaseActivity implements OnChartGestureLis
     }
 
     private void getData(int page, final int limit) {
+        if(isFinishing() || isDestroyed()){
+            return;
+        }
         Map<String, Object> map = new HashMap<>();
         map.put("devId", mDevId);
         map.put("dpIds", "1,102");
@@ -170,8 +171,9 @@ public class TempChartActivity extends BaseActivity implements OnChartGestureLis
                     } else {
                         OUtil.TLog("mData : " + new Gson().toJson(mData));
                         ProgressUtil.hideLoading();
-                        if (mData.size() > 0)
+                        if (mData.size() > 0){
                             setData2(mData, true);
+                        }
                     }
 
                 } catch (JSONException e) {
@@ -183,13 +185,16 @@ public class TempChartActivity extends BaseActivity implements OnChartGestureLis
             @Override
             public void onFailure(String errorCode, String errorMsg) {
                 ProgressUtil.hideLoading();
+                if(isFinishing() || isDestroyed()){
+                    showToastError("errorMsg :" + errorMsg);
+                }
                 OUtil.TLog("errorCode" + errorCode + "  errorMsg : " + errorMsg);
             }
         });
     }
 
     void test() {
-        String result = "{\"hasNext\":true,\"total\":601,\"dps\":[{\"timeStr\":\"2017-11-10 19:14:43\",\"value\":\"325\",\"dpId\":102,\"timeStamp\":1510312483},{\"timeStr\":\"2017-11-10 19:07:26\",\"value\":\"340\",\"dpId\":102,\"timeStamp\":1510312046},{\"timeStr\":\"2017-11-10 18:44:52\",\"value\":\"300\",\"dpId\":102,\"timeStamp\":1510310692},{\"timeStr\":\"2017-11-10 18:43:58\",\"value\":\"410\",\"dpId\":102,\"timeStamp\":1510310638},{\"timeStr\":\"2017-11-10 18:41:22\",\"value\":\"375\",\"dpId\":102,\"timeStamp\":1510310482},{\"timeStr\":\"2017-11-10 18:37:23\",\"value\":\"390\",\"dpId\":102,\"timeStamp\":1510310243},{\"timeStr\":\"2017-11-10 18:36:08\",\"value\":\"520\",\"dpId\":102,\"timeStamp\":1510310168},{\"timeStr\":\"2017-11-10 18:33:26\",\"value\":\"600\",\"dpId\":102,\"timeStamp\":1510310006},{\"timeStr\":\"2017-11-10 18:33:24\",\"value\":\"590\",\"dpId\":102,\"timeStamp\":1510310004},{\"timeStr\":\"2017-11-10 18:33:20\",\"value\":\"485\",\"dpId\":102,\"timeStamp\":1510310000},{\"timeStr\":\"2017-11-10 18:33:19\",\"value\":\"480\",\"dpId\":102,\"timeStamp\":1510309999},{\"timeStr\":\"2017-11-10 18:33:16\",\"value\":\"475\",\"dpId\":102,\"timeStamp\":1510309996},{\"timeStr\":\"2017-11-10 18:29:57\",\"value\":\"180\",\"dpId\":102,\"timeStamp\":1510309797},{\"timeStr\":\"2017-11-10 18:25:59\",\"value\":\"375\",\"dpId\":102,\"timeStamp\":1510309559},{\"timeStr\":\"2017-11-10 18:21:06\",\"value\":\"445\",\"dpId\":102,\"timeStamp\":1510309266},{\"timeStr\":\"2017-11-10 18:18:58\",\"value\":\"345\",\"dpId\":102,\"timeStamp\":1510309138},{\"timeStr\":\"2017-11-10 18:15:49\",\"value\":\"290\",\"dpId\":102,\"timeStamp\":1510308949},{\"timeStr\":\"2017-11-10 18:14:54\",\"value\":\"425\",\"dpId\":102,\"timeStamp\":1510308894},{\"timeStr\":\"2017-11-10 18:14:18\",\"value\":\"400\",\"dpId\":102,\"timeStamp\":1510308858},{\"timeStr\":\"2017-11-10 18:14:15\",\"value\":\"true\",\"dpId\":1,\"timeStamp\":1510308855},{\"timeStr\":\"2017-11-10 18:01:00\",\"value\":\"false\",\"dpId\":1,\"timeStamp\":1510308060},{\"timeStr\":\"2017-11-10 18:00:40\",\"value\":\"395\",\"dpId\":102,\"timeStamp\":1510308040},{\"timeStr\":\"2017-11-10 17:59:54\",\"value\":\"415\",\"dpId\":102,\"timeStamp\":1510307994},{\"timeStr\":\"2017-11-10 17:59:54\",\"value\":\"420\",\"dpId\":102,\"timeStamp\":1510307994},{\"timeStr\":\"2017-11-10 17:59:53\",\"value\":\"425\",\"dpId\":102,\"timeStamp\":1510307993},{\"timeStr\":\"2017-11-10 17:59:33\",\"value\":\"430\",\"dpId\":102,\"timeStamp\":1510307973},{\"timeStr\":\"2017-11-10 17:58:46\",\"value\":\"390\",\"dpId\":102,\"timeStamp\":1510307926},{\"timeStr\":\"2017-11-10 17:58:42\",\"value\":\"true\",\"dpId\":1,\"timeStamp\":1510307922},{\"timeStr\":\"2017-11-10 17:24:02\",\"value\":\"false\",\"dpId\":1,\"timeStamp\":1510305842},{\"timeStr\":\"2017-11-10 17:23:58\",\"value\":\"385\",\"dpId\":102,\"timeStamp\":1510305838}]}";
+        String result = "{\"hasNext\":true,\"total\":556,\"dps\":[{\"timeStr\":\"2017-12-08 15:34:44\",\"value\":\"285\",\"dpId\":102,\"timeStamp\":1512718484},{\"timeStr\":\"2017-12-08 15:34:42\",\"value\":\"290\",\"dpId\":102,\"timeStamp\":1512718482},{\"timeStr\":\"2017-12-08 15:34:41\",\"value\":\"295\",\"dpId\":102,\"timeStamp\":1512718481},{\"timeStr\":\"2017-12-08 15:34:39\",\"value\":\"300\",\"dpId\":102,\"timeStamp\":1512718479},{\"timeStr\":\"2017-12-08 15:34:39\",\"value\":\"305\",\"dpId\":102,\"timeStamp\":1512718479},{\"timeStr\":\"2017-12-08 15:34:38\",\"value\":\"310\",\"dpId\":102,\"timeStamp\":1512718478},{\"timeStr\":\"2017-12-08 15:34:37\",\"value\":\"315\",\"dpId\":102,\"timeStamp\":1512718477},{\"timeStr\":\"2017-12-08 15:32:14\",\"value\":\"350\",\"dpId\":102,\"timeStamp\":1512718334},{\"timeStr\":\"2017-12-08 15:32:05\",\"value\":\"290\",\"dpId\":102,\"timeStamp\":1512718325},{\"timeStr\":\"2017-12-08 15:20:29\",\"value\":\"285\",\"dpId\":102,\"timeStamp\":1512717629},{\"timeStr\":\"2017-12-08 15:20:27\",\"value\":\"290\",\"dpId\":102,\"timeStamp\":1512717627},{\"timeStr\":\"2017-12-08 15:20:22\",\"value\":\"300\",\"dpId\":102,\"timeStamp\":1512717622},{\"timeStr\":\"2017-12-08 15:20:19\",\"value\":\"295\",\"dpId\":102,\"timeStamp\":1512717619},{\"timeStr\":\"2017-12-08 15:20:17\",\"value\":\"290\",\"dpId\":102,\"timeStamp\":1512717617},{\"timeStr\":\"2017-12-08 15:16:37\",\"value\":\"285\",\"dpId\":102,\"timeStamp\":1512717397},{\"timeStr\":\"2017-12-08 15:16:35\",\"value\":\"345\",\"dpId\":102,\"timeStamp\":1512717395},{\"timeStr\":\"2017-12-08 15:12:16\",\"value\":\"true\",\"dpId\":1,\"timeStamp\":1512717136},{\"timeStr\":\"2017-12-08 15:10:53\",\"value\":\"false\",\"dpId\":1,\"timeStamp\":1512717053},{\"timeStr\":\"2017-12-08 15:10:53\",\"value\":\"350\",\"dpId\":102,\"timeStamp\":1512717053},{\"timeStr\":\"2017-12-08 14:59:10\",\"value\":\"false\",\"dpId\":1,\"timeStamp\":1512716350},{\"timeStr\":\"2017-12-08 14:31:11\",\"value\":\"true\",\"dpId\":1,\"timeStamp\":1512714671},{\"timeStr\":\"2017-12-08 14:31:11\",\"value\":\"350\",\"dpId\":102,\"timeStamp\":1512714671},{\"timeStr\":\"2017-12-08 14:30:43\",\"value\":\"false\",\"dpId\":1,\"timeStamp\":1512714643},{\"timeStr\":\"2017-12-08 14:30:43\",\"value\":\"350\",\"dpId\":102,\"timeStamp\":1512714643},{\"timeStr\":\"2017-12-08 14:25:30\",\"value\":\"false\",\"dpId\":1,\"timeStamp\":1512714330},{\"timeStr\":\"2017-12-08 14:25:12\",\"value\":\"true\",\"dpId\":1,\"timeStamp\":1512714312},{\"timeStr\":\"2017-12-08 14:18:34\",\"value\":\"false\",\"dpId\":1,\"timeStamp\":1512713914},{\"timeStr\":\"2017-12-08 14:17:28\",\"value\":\"350\",\"dpId\":102,\"timeStamp\":1512713848},{\"timeStr\":\"2017-12-08 14:17:26\",\"value\":\"true\",\"dpId\":1,\"timeStamp\":1512713846},{\"timeStr\":\"2017-12-08 14:14:42\",\"value\":\"false\",\"dpId\":1,\"timeStamp\":1512713682}]}\n";
         try {
             JSONObject jsonObj = new JSONObject(result);
             boolean hasNext = jsonObj.optBoolean("hasNext");//是否有下一页
@@ -306,26 +311,26 @@ public class TempChartActivity extends BaseActivity implements OnChartGestureLis
                         break;
                     case Constants.CHART_TYPE_30MINS:
                         //30mins 以内 30s为单位
-                        valueTemp = value * 30 / 60;
+                        valueTemp = value * 30 / 60.0f;
                         inner = "/min";
                         break;
                     case Constants.CHART_TYPE_HOURS:
                         //60mins 以内 60s为单位
-                        valueTemp = value * 60 / 60;
+                        valueTemp = value * 60 / 60.0f;
                         inner = "/min";
                         break;
                     case Constants.CHART_TYPE_3HOURS:
                         //180mins 以内 300s为单位
-                        valueTemp = value * 300 / 60;
+                        valueTemp = value * 300 / 60.0f;
                         inner = "/min";
                         break;
                     case Constants.CHART_TYPE_ELSE:
                         //超出180mins  暂时600s为单位
-                        valueTemp = value * 600 / 60;
+                        valueTemp = value * 600 / 60.0f;
                         inner = "/min";
                         break;
                 }
-               if((valueTemp-(valueTemp%1))>0){
+               if((valueTemp-((int)valueTemp))<=0){
                    return (int)valueTemp + inner;
                 }
                 return valueTemp + inner;
@@ -399,6 +404,9 @@ public class TempChartActivity extends BaseActivity implements OnChartGestureLis
     //[{"timeStamp":1510309559,"value":375},{"timeStamp":1510309266,"value":445},{"timeStamp":1510309138,"value":345},{"timeStamp":1510308949,"value":290},{"timeStamp":1510308894,"value":425},{"timeStamp":1510308858,"value":400}]
 
     private void setData2(List<ChartPointBean> mData, boolean isFirst) {
+        if(isFinishing() || isDestroyed()){
+            return;
+        }
         if (endTime == 0) {
             endTime = mData.get(0).getTimeStamp();
         }
@@ -409,6 +417,9 @@ public class TempChartActivity extends BaseActivity implements OnChartGestureLis
         tvStartTime.setText(OUtil.stampToDate(startTime * 1000, ""));
         tvEndTime.setText(OUtil.stampToDate(endTime * 1000, ""));
         long diff = (endTime - startTime);//前后相差的秒数
+        if(diff == 0){
+            return;
+        }
         OUtil.TLog("开始结束时间相差 : " + diff + " s");
         //showToastSuccess("本次烤肉时间 : " + diff + " s");
         if (isFirst) {
@@ -465,12 +476,50 @@ public class TempChartActivity extends BaseActivity implements OnChartGestureLis
         ArrayList<Entry> values = new ArrayList<Entry>();
         int index = mData.size() - 1;
         for (long lastTime = 0; lastTime <= diff; lastTime++) {
-            if (index < 0) {
+            if(index > 0){
+                ChartPointBean indexBean = mData.get(index);
+                float val = (float) indexBean.getValue();
+                ChartPointBean nextIndexBean = mData.get(index-1);
+                double indexTime = (indexBean.getTimeStamp() - startTime) * 1.0 / timeOffSet;
+                double nextIndexTime = (nextIndexBean.getTimeStamp() - startTime) * 1.0 / timeOffSet;
+                if(indexTime<lastTime){
+                    if(nextIndexTime>=lastTime){
+
+                    }else{
+                        index--;
+                        lastTime -= 1;
+                        nextStar = true;
+                        continue;
+                    }
+
+                }else{
+
+                }
+                if (nextStar) {
+                    values.add(new Entry(lastTime, val, ContextCompat.getDrawable(this, R.mipmap.star)));
+                    nextStar = false;
+                } else {
+                    values.add(new Entry(lastTime, val));
+                }
+            }else{
+                ChartPointBean indexBean = mData.get(index);
+                float val = (float) indexBean.getValue();
+
+                if (nextStar) {
+                    values.add(new Entry(lastTime, val, ContextCompat.getDrawable(this, R.mipmap.star)));
+                    nextStar = false;
+                } else {
+                    values.add(new Entry(lastTime, val));
+                }
+            }
+
+
+          /*  if (index < 0) {
                 index = 0;
             }
             ChartPointBean bean = mData.get(index);
             float val = (float) bean.getValue();
-            long time = (bean.getTimeStamp() - startTime) / timeOffSet;
+            double time = (bean.getTimeStamp() - startTime) * 1.0 / timeOffSet;
             if (time < lastTime && index != 0) {
                 index--;
                 lastTime -= 1;
@@ -483,10 +532,12 @@ public class TempChartActivity extends BaseActivity implements OnChartGestureLis
             } else {
                 values.add(new Entry(lastTime, val));
             }
-
+*/
         }
         LineDataSet set1;
-
+       /* if(diff == 0){
+            diff = 7;
+        }*/
         if (mChart.getData() != null &&
                 mChart.getData().getDataSetCount() > 0) {
             set1 = (LineDataSet) mChart.getData().getDataSetByIndex(0);
@@ -497,7 +548,8 @@ public class TempChartActivity extends BaseActivity implements OnChartGestureLis
             mChart.getViewPortHandler().setMaximumScaleX(diff / 7f);
         } else {
             // create a dataset and give it a type
-            set1 = new LineDataSet(values, "Last Time Temperature Chart");
+
+            set1 = new LineDataSet(values, "The star means Change Temperature");
             set1.setDrawIcons(true);
             // set the line to be drawn like this "- - - - - -"
 /*            set1.enableDashedLine(10f, 5f, 0f);
@@ -599,8 +651,11 @@ public class TempChartActivity extends BaseActivity implements OnChartGestureLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        isOver = true;
+        //TuyaSmartRequest.getInstance().onDestroy();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @OnClick(R.id.tv_unit)
     public void onViewClicked() {
         if(uintPickerDialog==null){
@@ -612,6 +667,7 @@ public class TempChartActivity extends BaseActivity implements OnChartGestureLis
             datas.add("5mins");
             datas.add("10mins");
             uintPickerDialog = new ChartUnitPickerDialog(getActivity(), datas, tvUint.getText().toString());
+            uintPickerDialog.create();
             uintPickerDialog.setTitle("Unit Select");
             uintPickerDialog.setCallBackListen(new ChartUnitPickerDialog.callBackListen() {
                 @Override
@@ -637,7 +693,7 @@ public class TempChartActivity extends BaseActivity implements OnChartGestureLis
                     }
                     if(realType<type){
                         type = realType;
-                        //showToastSuccess("时间单位太大了");
+                        showToastSuccess("Unit too long..");
                     }
                     if (mData.size() > 0)
                         setData2(mData, false);
@@ -645,6 +701,9 @@ public class TempChartActivity extends BaseActivity implements OnChartGestureLis
             });
             uintPickerDialog.setSelect("1s");
         }
+        uintPickerDialog.setSelect(uintPickerDialog.getmDatasByIndex(type));
         uintPickerDialog.show();
     }
+
+
 }

@@ -17,15 +17,15 @@
 
         <ProgressBar
             android:id="@+id/rv_with_footer_loading_progress"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="17dp"
+            android:layout_height="17dp"
             android:layout_gravity="center"/>
 
         <TextView
             android:id="@+id/rv_with_footer_loading_load"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="3dp"
             android:text="@string/rv_with_footer_loading"
             android:textSize="12sp"/>
     </LinearLayout>

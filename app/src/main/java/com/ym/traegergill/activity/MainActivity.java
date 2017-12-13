@@ -26,6 +26,7 @@ import com.ym.traegergill.adapter.MyFragmentPagerAdapter;
 import com.ym.traegergill.behavior.ByeBurgerBehavior;
 import com.ym.traegergill.broadcast.TraegerGillBroadcastHelper;
 import com.ym.traegergill.fragment.EmptyFragment;
+import com.ym.traegergill.fragment.H5RecipesFragment;
 import com.ym.traegergill.fragment.H5ShopFragment;
 import com.ym.traegergill.fragment.MyFragment;
 import com.ym.traegergill.fragment.TabRecFragment;
@@ -35,6 +36,7 @@ import com.ym.traegergill.tools.Constants;
 import com.ym.traegergill.tools.GlideLoadUtil;
 import com.ym.traegergill.tools.MyNetTool;
 import com.ym.traegergill.tools.OUtil;
+import com.ym.traegergill.tools.RegularUtils;
 import com.ym.traegergill.tools.SharedPreferencesUtils;
 import com.ym.traegergill.tuya.utils.DialogUtil;
 import com.ym.traegergill.tuya.utils.ProgressUtil;
@@ -74,10 +76,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         unbinder = ButterKnife.bind(this);
         initViewPager();
-        if(OUtil.isNetworkConnected(getActivity())){
-            netAppVersion();
-        }
-
+         netAppVersion();
     }
 
     private void netAppVersion() {
@@ -96,22 +95,13 @@ public class MainActivity extends BaseActivity {
                         String content = obj.optString("content");
                         String nowVer = getVersion();
                        if(content.equals(nowVer)){
-
+                           //=====test=====
+                    /*       needUpdate = true;
+                           setMessagePoint();*/
+                           //=====test=====
                        }else{
                            needUpdate = true;
                            setMessagePoint();
-                           /*DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.update_ready_download_title)
-                                   , getActivity().getString(R.string.Confirm), getActivity().getString(R.string.action_close), null, new DialogInterface.OnClickListener() {
-                                       @Override
-                                       public void onClick(DialogInterface dialog, int which) {
-                                           switch (which) {
-                                               case DialogInterface.BUTTON_POSITIVE:
-                                                   break;
-                                               case DialogInterface.BUTTON_NEGATIVE:
-                                                   break;
-                                           }
-                                       }
-                                   }).show();*/
                        }
                     }else{
                         showToastError(obj.optString("msg"));
@@ -128,12 +118,25 @@ public class MainActivity extends BaseActivity {
             }
         };
         HttpParams httpParams = new HttpParams();
-        MyNetTool.netHttpParams(getActivity(), URLs.getAppVersion,callback,httpParams);
-        netPromotionPicture();
+
+        if(!MyNetTool.netHttpParams(getActivity(), URLs.getAppVersion,callback,httpParams)){
+            showRenetDialog(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            netAppVersion();
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            break;
+                    }
+                }
+            });
+        }else{
+            netPromotionPicture();
+        }
 
     }
-
-
     private void netPromotionPicture() {
         StringCallback callback = new StringCallback() {
             @Override
@@ -149,14 +152,25 @@ public class MainActivity extends BaseActivity {
                     if (obj.optInt("code") == 200) {
                         String content = obj.optString("content");
                         content = GlideLoadUtil.getMyServerUrl(content);
-                        advList = new ArrayList<>();
-                        AdInfo adInfo = new AdInfo();
-                        adInfo.setActivityImg(content);
-                        advList.add(adInfo);
-                        AdManager adManager = new AdManager(MainActivity.this, advList);
-                        adManager.setOverScreen(true)
-                                .setPageTransformer(new DepthPageTransformer());
-                        adManager.showAdDialog(AdConstant.ANIM_DOWN_TO_UP);
+
+                        if(RegularUtils.isURL(content)){
+                            advList = new ArrayList<>();
+                            AdInfo adInfo = new AdInfo();
+                            adInfo.setActivityImg(content);
+                            advList.add(adInfo);
+                            AdManager adManager = new AdManager(MainActivity.this, advList);
+                            adManager.setOverScreen(true)
+                                    .setPageTransformer(new DepthPageTransformer());
+                            adManager.showAdDialog(AdConstant.ANIM_DOWN_TO_UP);
+                            adManager.setOnImageClickListener(new AdManager.OnImageClickListener() {
+                                @Override
+                                public void onImageClick(View view, AdInfo advInfo) {
+                                    OUtil.TLog(advInfo.getUrl());
+                               /* Intent intent = new Intent(getActivity(), AddDeviceSuccessActivity.class);
+                                getActivity().startActivity(intent);*/
+                                }
+                            });
+                        }
                     }else{
                         showToastError(obj.optString("msg"));
                     }
@@ -171,7 +185,20 @@ public class MainActivity extends BaseActivity {
             }
         };
         HttpParams httpParams = new HttpParams();
-        MyNetTool.netHttpParams(getActivity(), URLs.getPromotionPicture,callback,httpParams);
+        if(!MyNetTool.netHttpParams(getActivity(), URLs.getPromotionPicture,callback,httpParams)){
+            showRenetDialog(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            netPromotionPicture();
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            break;
+                    }
+                }
+            });
+        }
     }
 
 
@@ -188,7 +215,7 @@ public class MainActivity extends BaseActivity {
             if (i == 0) {
                 fragments.add(new TabTraFragment());
             } else if (i == 1) {
-                fragments.add(new TabRecFragment());
+                fragments.add(new H5RecipesFragment());
             } else if (i == 4) {
                 fragments.add(new MyFragment());
             } else if (i == 3) {

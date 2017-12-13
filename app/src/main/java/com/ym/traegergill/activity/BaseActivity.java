@@ -1,15 +1,18 @@
 package com.ym.traegergill.activity;
+
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
 import com.lzy.okhttputils.OkHttpUtils;
 import com.tuya.smart.sdk.TuyaUser;
 import com.ym.traegergill.R;
@@ -17,9 +20,10 @@ import com.ym.traegergill.tools.Constants;
 import com.ym.traegergill.tools.OUtil;
 import com.ym.traegergill.tools.StatusBarTool;
 import com.ym.traegergill.tools.SystemTool;
+import com.ym.traegergill.tuya.utils.DialogUtil;
+import com.ym.traegergill.tuya.utils.ProgressUtil;
 
 import butterknife.Unbinder;
-import okhttp3.OkHttpClient;
 
 /**
  * Created by Administrator on 2017/9/20.
@@ -27,9 +31,12 @@ import okhttp3.OkHttpClient;
 
 public class BaseActivity extends AppCompatActivity {
     protected Unbinder unbinder;
-    /** 日志输出标志 **/
+    /**
+     * 日志输出标志
+     **/
     protected final String TAG =
             this.getClass().getSimpleName();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,9 +52,10 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
-    protected Activity getActivity(){
+    protected Activity getActivity() {
         return this;
     }
+
     public void initStatusBar(Activity mainActivity) {
         if (SystemTool.isFlyme()) {
             StatusBarTool.setMeizuStatusBarDarkIcon(mainActivity, true);
@@ -57,7 +65,8 @@ public class BaseActivity extends AppCompatActivity {
             StatusBarTool.setNormalStatusBarDarkIcon(mainActivity);
         }
     }
-    public void exit(View view){
+
+    public void exit(View view) {
         //super.finish();
         this.finishAfterTransition();
     }
@@ -67,30 +76,30 @@ public class BaseActivity extends AppCompatActivity {
         super.finish();
     }
 
-    public void showToastSuccess(String msg)
-    {
-        OUtil.toastSuccess(this,msg);
+    public void showToastSuccess(String msg) {
+        OUtil.toastSuccess(this, msg);
     }
-    public void showToastError(String msg)
-    {
-        OUtil.toastError(this,msg);
+
+    public void showToastError(String msg) {
+        OUtil.toastError(this, msg);
     }
 
 
-    public void TLog(String msg){
-        if(msg==null){
+    public void TLog(String msg) {
+        if (msg == null) {
             msg = "";
         }
-        Log.i(Constants.preTestString  + TAG,msg);
+        Log.i(Constants.preTestString + TAG, msg);
     }
 
     private void checkLogin() {
         if (needLogin() && !TuyaUser.getUserInstance().isLogin()) {
             startActivity(new Intent(this, SignInActivity.class));
             this.finish();
-            overridePendingTransition(R.anim.slide_bottom_to_top,R.anim.slide_none_medium_time);
+            overridePendingTransition(R.anim.slide_bottom_to_top, R.anim.slide_none_medium_time);
         }
     }
+
     /**
      * 是否需要登录，子类根据业务需要决定.
      * 默认所有界面都需要判断是否登录状态。
@@ -104,6 +113,7 @@ public class BaseActivity extends AppCompatActivity {
     public static final int ANIMATE_BACK = 1;
     public static final int ANIMATE_SLIDE_TOP_FROM_BOTTOM = 3;
     public static final int ANIMATE_SLIDE_BOTTOM_FROM_TOP = 4;
+
     public static void overridePendingTransition(Activity activity, int direction) {
         if (direction == ANIMATE_FORWARD) {
             activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -117,15 +127,19 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         OkHttpUtils.getInstance().cancelTag(getActivity());
-        if(unbinder!=null){
+        if (unbinder != null) {
             unbinder.unbind();
             TLog("===unbinder===");
         }
+    }
 
+    protected void showRenetDialog(DialogInterface.OnClickListener listener) {
+        ProgressUtil.hideLoading();
+        DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
+                , getActivity().getString(R.string.retry), getActivity().getString(R.string.action_close), null, listener).show();
     }
 }

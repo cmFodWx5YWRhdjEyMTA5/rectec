@@ -32,7 +32,6 @@ import butterknife.Unbinder;
 public class BrowserActivity extends BaseActivity {
 
     private static final String TAG = "Browser";
-
     public static final String EXTRA_TITLE = "Title";
     public static final String EXTRA_URI = "Uri";
     public static final String EXTRA_LOGIN = "Login";
@@ -80,10 +79,23 @@ public class BrowserActivity extends BaseActivity {
             }
         });
         webview.setWebChromeClient(new WebChromeClient() {
+
+            @Override
+            public void onReceivedTitle(WebView view, String title) {
+                super.onReceivedTitle(view, title);
+                if(TextUtils.isEmpty(getIntent().getStringExtra(EXTRA_TITLE))){
+                    BrowserActivity.this.title.setText(title);
+                }
+
+            }
+
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 // TODO Auto-generated method stub
                 super.onProgressChanged(view, newProgress);
+                if(progressBar==null){
+                    return;
+                }
                 if (newProgress == 100) {
                     progressBar.setVisibility(View.GONE);
                 } else {
@@ -114,6 +126,9 @@ public class BrowserActivity extends BaseActivity {
                 pullToRefresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        if(isDestroyed() || isFinishing()){
+                            return;
+                        }
                         Map<String, String> headers = new HashMap<String, String>();
                         headers.put("Accept-Language", TyCommonUtil.getLang(getActivity()));
                         webview.loadUrl(url, headers);
@@ -218,11 +233,13 @@ public class BrowserActivity extends BaseActivity {
         }
     }
 
-
-
-
     @Override
     public boolean needLogin() {
         return needlogin;
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
     }
 }

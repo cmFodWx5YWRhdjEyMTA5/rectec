@@ -23,12 +23,14 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.lzy.okhttputils.callback.StringCallback;
 import com.lzy.okhttputils.model.HttpParams;
+import com.tuya.smart.sdk.TuyaUser;
 import com.ym.traegergill.R;
 import com.ym.traegergill.net.URLs;
 import com.ym.traegergill.tools.Constants;
 import com.ym.traegergill.tools.GlideLoadUtil;
 import com.ym.traegergill.tools.MyNetTool;
 import com.ym.traegergill.tools.OUtil;
+import com.ym.traegergill.tuya.utils.DialogUtil;
 import com.ym.traegergill.tuya.utils.ProgressUtil;
 
 import org.json.JSONException;
@@ -57,7 +59,8 @@ public class AppStartActivity extends BaseActivity {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.CALL_PHONE
 
     };
     /**
@@ -159,10 +162,10 @@ public class AppStartActivity extends BaseActivity {
      */
     private void showMissingPermissionDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("提示");
-        builder.setMessage("当前应用缺少必要权限。请点击\"设置\"-\"权限\"-打开所需权限。");
+        builder.setTitle("Warning");
+        builder.setMessage(getString(R.string.permission_failed_tip));
         // 拒绝, 退出应用
-        builder.setNegativeButton("取消",
+        builder.setNegativeButton(getString(R.string.cancel),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -170,7 +173,7 @@ public class AppStartActivity extends BaseActivity {
                     }
                 });
 
-        builder.setPositiveButton("设置",
+        builder.setPositiveButton("setting",
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -211,7 +214,6 @@ public class AppStartActivity extends BaseActivity {
                 TLog("isFromCache : " + isFromCache + "  json : " + s);
                 if (isFromCache) {
                     showToastError(getString(R.string.network_error));
-                    return;
                 }
                 try {
                     JSONObject obj = new JSONObject(s);
@@ -245,7 +247,22 @@ public class AppStartActivity extends BaseActivity {
             }
         };
         HttpParams httpParams = new HttpParams();
-        MyNetTool.netHttpParams(getActivity(), URLs.getSplashPicture, callback, httpParams);
+        if(!MyNetTool.netHttpParams(getActivity(), URLs.getSplashPicture, callback, httpParams)){
+            showRenetDialog(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            netSplashPicture();
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            System.exit(0);
+                            break;
+                    }
+                }
+            });
+
+        }
 
     }
     private void doAnima(){

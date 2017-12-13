@@ -26,12 +26,18 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:src="@drawable/filter_btn_arrow"
+                android:onClick="exit"
                 />
 
             <TextView
                 android:id="@+id/title"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
+                android:paddingLeft="40dp"
+                android:paddingRight="40dp"
                 android:layout_height="wrap_content"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:layout_centerInParent="true"
                 android:fontFamily="sans-serif"
                 android:text="title"

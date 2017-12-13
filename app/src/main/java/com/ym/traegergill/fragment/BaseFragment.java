@@ -2,6 +2,7 @@ package com.ym.traegergill.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -21,6 +22,8 @@ import com.ym.traegergill.R;
 import com.ym.traegergill.activity.BaseActivity;
 import com.ym.traegergill.tools.Constants;
 import com.ym.traegergill.tools.OUtil;
+import com.ym.traegergill.tuya.utils.DialogUtil;
+import com.ym.traegergill.tuya.utils.ProgressUtil;
 
 import butterknife.Unbinder;
 
@@ -112,9 +115,6 @@ public class BaseFragment extends Fragment {
         isFragmentVisible = false;
         rootView = null;
         isReuseView = true;
-        if(unbinder!=null)
-            unbinder.unbind();
-
     }
 
     /**
@@ -178,4 +178,9 @@ public class BaseFragment extends Fragment {
         Log.i(Constants.preTestString  + TAG,msg);
     }
 
+    protected void showRenetDialog(DialogInterface.OnClickListener listener){
+        ProgressUtil.hideLoading();
+        DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
+                , getActivity().getString(R.string.retry), getActivity().getString(R.string.action_close), null, listener).show();
+    }
 }

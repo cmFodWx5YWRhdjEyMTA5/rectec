@@ -15,6 +15,7 @@
             android:id="@+id/rv_load_more"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/gray_bgf3"
             android:fadingEdge="none"
             android:overScrollMode="never"></com.ym.traegergill.view.loadmore.RecyclerViewWithFooter>
     </com.yalantis.phoenix.PullToRefreshView>

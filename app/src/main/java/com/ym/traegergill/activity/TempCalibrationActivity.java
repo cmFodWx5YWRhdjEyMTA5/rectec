@@ -20,6 +20,7 @@ import com.tuya.smart.sdk.TuyaDevice;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IDevListener;
 import com.ym.traegergill.R;
+import com.ym.traegergill.tools.Constants;
 import com.ym.traegergill.tools.OUtil;
 import com.ym.traegergill.tuya.utils.DialogUtil;
 
@@ -71,7 +72,7 @@ public class TempCalibrationActivity extends BaseActivity {
         mTuyaDevice = new TuyaDevice(mDevId);
         Map<String, Object> list = TuyaUser.getDeviceInstance().getDps(mDevId);
         for (Map.Entry<String, Object> entry : list.entrySet()) {
-            if (entry.getKey().equals("107")) {
+            if (entry.getKey().equals(Constants.Temp_adjust_DPID)) {
                 int temp = Integer.parseInt(entry.getValue().toString());
                 percent.setText(temp + "");
             }
@@ -90,7 +91,7 @@ public class TempCalibrationActivity extends BaseActivity {
                 enableViews(false);
                 JSONObject jsonObject = JSONObject.parseObject(dpStr);
                 for (Map.Entry<String, Object> entry : jsonObject.entrySet()) {
-                    if (entry.getKey().equals("107")) {
+                    if (entry.getKey().equals(Constants.Temp_adjust_DPID)) {
                         int temp = Integer.parseInt(entry.getValue().toString());
                         percent.setText(temp + "");
                     }
@@ -226,7 +227,7 @@ public class TempCalibrationActivity extends BaseActivity {
         enableViews(false);
         mHandler.postDelayed(mRunnable, 300);
         HashMap<String, Object> stringObjectHashMap = new HashMap<>();
-        stringObjectHashMap.put("107", value);
+        stringObjectHashMap.put(Constants.Temp_adjust_DPID, value);
         String commandStr = JSON.toJSONString(stringObjectHashMap);
         mTuyaDevice.publishDps(commandStr, new IControlCallback() {
             @Override

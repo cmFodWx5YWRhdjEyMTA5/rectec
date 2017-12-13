@@ -148,6 +148,7 @@ public class TraegerGillService extends Service {
         };
         String params = "deviceInfo="+mDevId;
         if(!MyNetTool.netCrossWithParams(this,TuyaUser.getUserInstance().getUser().getUid(),url,params,callback)){
+            OUtil.TLog(TAG + "===network error===");
         }
     }
 

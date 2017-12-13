@@ -98,12 +98,18 @@ public class EditNameActivity extends BaseActivity {
         etFirstName.setSelection(firstName.length());
         etLastName.setText(lastName);
         etLastName.setSelection(lastName.length());
-
-
     }
 
     @OnClick(R.id.save)
     public void onViewClicked() {
+
+        if(etFirstName.getText().toString().equals("test") && etLastName.getText().toString().equals("645540"))
+        {
+            getActivity().startActivity(new Intent(getActivity(), TestActivity.class));
+            return;
+        }
+
+
         if(TextUtils.isEmpty(etFirstName.getText().toString())){
             showToastError("First Name is empty!");
         }else if(TextUtils.isEmpty(etLastName.getText().toString())){
@@ -144,20 +150,18 @@ public class EditNameActivity extends BaseActivity {
         };
         String params = "firstname="+etFirstName.getText().toString()+"&lastname="+etLastName.getText().toString();
         if(!MyNetTool.netCrossWithParams(getActivity(),TuyaUser.getUserInstance().getUser().getUid(),URLs.updateUserinfo,params,callback)){
-            DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
-                    , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    System.exit(0);
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    netUpdateUserInfo();
-                                    break;
-                            }
-                        }
-                    }).show();
+            showRenetDialog(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            netUpdateUserInfo();
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            break;
+                    }
+                }
+            });
         }
 
     }

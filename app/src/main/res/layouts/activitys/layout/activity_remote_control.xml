@@ -10,12 +10,12 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/control_bg09"
-        >
-    <include
-        layout="@layout/view_cover_error"
-        android:visibility="gone"
-        ></include>
+        android:background="@color/control_bg09">
+
+        <include
+            layout="@layout/view_cover_error"
+            android:visibility="gone"></include>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -31,15 +31,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:scrollbars="none"
                 android:fadingEdge="none"
                 android:overScrollMode="never"
-                >
+                android:scrollbars="none">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/control_bg09">
+
                     <LinearLayout
                         android:id="@+id/top_main"
                         android:layout_width="match_parent"
@@ -53,8 +53,19 @@
                             android:layout_weight="1"
                             android:gravity="center_horizontal"
                             android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/tv_set_point_content"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="ER1"
+                                android:visibility="gone"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginTop="47dp"
+                                android:textColor="@color/color444"
+                                android:textSize="33sp" />
 
                             <LinearLayout
+                                android:id="@+id/ll_set_point_value"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerHorizontal="true"
@@ -73,7 +84,7 @@
                                     android:id="@+id/left_temp_unit"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/CCCC"
+                                    android:text="@string/FFFF"
                                     android:textColor="@color/color444"
                                     android:textSize="33sp" />
                             </LinearLayout>
@@ -82,7 +93,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="25dp"
-                                android:text="@string/Actual"
+                                android:text="@string/Set_Point"
                                 android:textColor="@color/color9999"
                                 android:textSize="20sp"
                                 android:textStyle="bold" />
@@ -119,7 +130,7 @@
                                     android:id="@+id/mid_temp_unit"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/CCCC"
+                                    android:text="@string/FFFF"
                                     android:textColor="@color/color444"
                                     android:textSize="33sp" />
                             </LinearLayout>
@@ -128,7 +139,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="25dp"
-                                android:text="@string/Set_Point"
+                                android:text="@string/Actual"
                                 android:textColor="@color/color9999"
                                 android:textSize="20sp"
                                 android:textStyle="bold" />
@@ -180,7 +191,7 @@
                                         android:id="@+id/right_top_temp_unit"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="@string/CCCC"
+                                        android:text="@string/FFFF"
                                         android:textColor="@color/color32"
                                         android:textSize="20sp" />
                                 </LinearLayout>
@@ -254,8 +265,8 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_below="@id/top_main"
                         android:layout_alignParentBottom="true"
+                        android:layout_below="@id/top_main"
                         android:layout_marginTop="10dp">
 
                         <RelativeLayout
@@ -292,39 +303,64 @@
                                     android:orientation="vertical"
                                     android:translationZ="8dp">
 
-                                    <RelativeLayout
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:orientation="horizontal">
-
-                                        <TextView
-                                            android:id="@+id/bottom_temp"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:text="350"
-                                            android:textColor="@color/white"
-                                            android:textSize="50sp" />
-
-                                        <TextView
-                                            android:id="@+id/bottom_temp_unit"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_alignParentTop="true"
-                                            android:layout_marginTop="15dp"
-                                            android:layout_toRightOf="@+id/bottom_temp"
-                                            android:text="@string/CCCC"
-                                            android:textColor="@color/white"
-                                            android:textSize="16sp"
-                                            android:textStyle="bold" />
-                                    </RelativeLayout>
-
                                     <TextView
+                                        android:id="@+id/tv_er_content"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="@string/Set_Point"
                                         android:textColor="@color/white"
-                                        android:textSize="19sp" />
+                                        android:textSize="19sp"
+                                        android:textStyle="bold"
+                                        android:visibility="gone" />
 
+
+                                    <LinearLayout
+                                        android:id="@+id/ll_bottom_content"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:id="@+id/tv_ex_smoke"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="@string/EXTREME_SMOKE"
+                                            android:textColor="@color/white"
+                                            android:textSize="12sp" />
+
+                                        <RelativeLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:orientation="horizontal">
+
+                                            <TextView
+                                                android:id="@+id/bottom_temp"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="350"
+                                                android:textColor="@color/white"
+                                                android:textSize="50sp" />
+
+                                            <TextView
+                                                android:id="@+id/bottom_temp_unit"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_alignParentTop="true"
+                                                android:layout_marginTop="15dp"
+                                                android:layout_toRightOf="@+id/bottom_temp"
+                                                android:text="@string/FFFF"
+                                                android:textColor="@color/white"
+                                                android:textSize="16sp"
+                                                android:textStyle="bold" />
+                                        </RelativeLayout>
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="@string/Set_Point"
+                                            android:textColor="@color/white"
+                                            android:textSize="19sp" />
+                                    </LinearLayout>
                                 </LinearLayout>
                             </LinearLayout>
 
@@ -339,6 +375,7 @@
                                 android:src="@drawable/add_press"
                                 android:translationZ="8dp" />
                         </RelativeLayout>
+
                         <LinearLayout
                             android:id="@+id/ll_power_status"
                             android:layout_width="match_parent"
@@ -359,7 +396,7 @@
                                 android:text="OFF"
                                 android:textColor="@color/color9999"
                                 android:textSize="17sp"
-                                android:translationZ="100dp"/>
+                                android:translationZ="100dp" />
 
                         </LinearLayout>
 
@@ -368,6 +405,7 @@
             </ScrollView>
 
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/ll_temp_chart"
             android:layout_width="match_parent"
@@ -375,6 +413,7 @@
             android:layout_alignParentBottom="true"
             android:background="@drawable/temp_chart_click"
             android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

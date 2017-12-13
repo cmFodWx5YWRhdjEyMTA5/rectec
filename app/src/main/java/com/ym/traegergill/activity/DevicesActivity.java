@@ -24,7 +24,6 @@ import com.ym.traegergill.tools.OUtil;
 import com.ym.traegergill.tuya.presenter.DeviceListPresenter;
 import com.ym.traegergill.tuya.utils.DialogUtil;
 import com.ym.traegergill.tuya.utils.ProgressUtil;
-import com.ym.traegergill.tuya.utils.ToastUtil;
 import com.ym.traegergill.tuya.view.IDeviceListView;
 
 import java.util.List;
@@ -51,6 +50,8 @@ public class DevicesActivity extends BaseActivity implements IDeviceListView {
     DeviceListPresenter deviceListPresenter;
     @BindView(R.id.list_background_tip)
     RelativeLayout listBackgroundTip;
+    @BindView(R.id.tv_remark)
+    TextView tvRemark;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,7 +82,7 @@ public class DevicesActivity extends BaseActivity implements IDeviceListView {
 
     private void init() {
         title.setText(getString(R.string.home_my_device).toUpperCase());
-        ProgressUtil.showLoading(this,"loading..");
+        ProgressUtil.showLoading(this, "loading..");
         new Handler().postDelayed(new Runnable() {//定义延时任务模仿网络请求
             @Override
             public void run() {
@@ -119,14 +120,13 @@ public class DevicesActivity extends BaseActivity implements IDeviceListView {
         adapter.setOnMyItemLongClickListener(new DevicesRvAdapter.OnMyItemLongClickListener() {
             @Override
             public void onNormalLongClick(View v, final int position) {
-                DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.remove_the_device)
+                DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.device_confirm_remove)
                         , getActivity().getString(R.string.Yes), getActivity().getString(R.string.No), null, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (which) {
                                     case DialogInterface.BUTTON_POSITIVE:
                                         //Yes
-
                                         String devId = adapter.getItem(position).getDevId();
                                         TuyaDevice mDevice = new TuyaDevice(devId);
                                         mDevice.removeDevice(new IControlCallback() {
@@ -134,6 +134,7 @@ public class DevicesActivity extends BaseActivity implements IDeviceListView {
                                             public void onError(String s, String s1) {
                                                 OUtil.TLog(s + " : " + s1);
                                             }
+
                                             @Override
                                             public void onSuccess() {
                                                 showToastSuccess("Success");
@@ -155,12 +156,12 @@ public class DevicesActivity extends BaseActivity implements IDeviceListView {
         deviceRecycler.setAdapter(adapter);
     }
 
-    @OnClick({R.id.add,R.id.list_background_tip})
+    @OnClick({R.id.add, R.id.list_background_tip})
     public void onViewClicked(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.add:
                 getActivity().startActivity(new Intent(getActivity(), AddDevicesGuidActivity.class));
-                overridePendingTransition(this,ANIMATE_SLIDE_TOP_FROM_BOTTOM);
+                overridePendingTransition(this, ANIMATE_SLIDE_TOP_FROM_BOTTOM);
                 break;
 
         }
@@ -197,12 +198,14 @@ public class DevicesActivity extends BaseActivity implements IDeviceListView {
 
     @Override
     public void showBackgroundView() {
+        tvRemark.setVisibility(View.GONE);
         listBackgroundTip.setVisibility(View.VISIBLE);
         deviceRecycler.setVisibility(View.GONE);
     }
 
     @Override
     public void hideBackgroundView() {
+        tvRemark.setVisibility(View.VISIBLE);
         listBackgroundTip.setVisibility(View.GONE);
         deviceRecycler.setVisibility(View.VISIBLE);
     }
@@ -217,7 +220,7 @@ public class DevicesActivity extends BaseActivity implements IDeviceListView {
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(this,ANIMATE_SLIDE_BOTTOM_FROM_TOP);
+        overridePendingTransition(this, ANIMATE_SLIDE_BOTTOM_FROM_TOP);
     }
 
     @Override

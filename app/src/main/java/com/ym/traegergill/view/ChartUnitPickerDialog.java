@@ -27,8 +27,17 @@ public class ChartUnitPickerDialog extends Dialog implements View.OnClickListene
     private List<String> mDatas;
     private ImageView back;
     private String title;
+    private int btnRes = 0;
     private String returnText = "";
     private String strDefault;
+
+    public String getmDatasByIndex(int index) {
+        if(index<mDatas.size() && index>=0){
+            return mDatas.get(index);
+        }
+        return null;
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -47,7 +56,9 @@ public class ChartUnitPickerDialog extends Dialog implements View.OnClickListene
     public void setTitle(String title) {
         this.title = title;
     }
-
+    public void setBtnColor(int btnRes) {
+        this.btnRes = btnRes;
+    }
     public interface callBackListen{
         abstract void callback(String text);
     }
@@ -81,6 +92,10 @@ public class ChartUnitPickerDialog extends Dialog implements View.OnClickListene
         sure = (TextView) findViewById(R.id.sure);
         dialog_title = (TextView) findViewById(R.id.dialog_title);
         dialog_title.setText(title);
+        if(btnRes!=0){
+            sure.setBackgroundResource(btnRes);
+        }
+
         Window dialogWindow = getWindow();
         dialogWindow.setGravity(Gravity.CENTER);
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
@@ -100,7 +115,7 @@ public class ChartUnitPickerDialog extends Dialog implements View.OnClickListene
         back.setOnClickListener(this);
     }
     public void setSelect(String text){
-        if(pickerview!=null)
+        if(pickerview!=null && text!=null)
             pickerview.setSelected(text);
     }
 

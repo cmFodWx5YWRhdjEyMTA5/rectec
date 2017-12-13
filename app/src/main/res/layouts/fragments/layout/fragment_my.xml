@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:background="@color/gray_bgf3"
     android:orientation="vertical">
     <include layout="@layout/view_toolbar"
         ></include>
@@ -19,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="25dp"
+            android:background="@color/gray_bgf3"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"></android.support.v7.widget.RecyclerView>
 
         <android.support.design.widget.AppBarLayout

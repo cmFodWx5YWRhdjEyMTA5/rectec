@@ -120,20 +120,18 @@ public class RecipesDetailActivity extends BaseActivity {
             //登录状态
             String paramsCross = "recipeid="+recipeid;
             if(!MyNetTool.netCrossWithParams(getActivity(),TuyaUser.getUserInstance().getUser().getUid(),URLs.findRecipeById,paramsCross,callback)){
-                DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
-                        , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which) {
-                                    case DialogInterface.BUTTON_POSITIVE:
-                                        System.exit(0);
-                                        break;
-                                    case DialogInterface.BUTTON_NEGATIVE:
-                                        netRecipesData();
-                                        break;
-                                }
-                            }
-                        }).show();
+                showRenetDialog(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        switch (which) {
+                            case DialogInterface.BUTTON_POSITIVE:
+                                netRecipesData();
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                break;
+                        }
+                    }
+                });
             }
         }else{
             //非登录状态
@@ -141,26 +139,27 @@ public class RecipesDetailActivity extends BaseActivity {
             params.put("recipeid", recipeid + "");
             TLog("params : " + new Gson().toJson(params));
             if(!MyNetTool.netHttpParams(getActivity(),URLs.BASE + URLs.findRecipeById,callback,params)){
-                DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
-                        , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which) {
-                                    case DialogInterface.BUTTON_POSITIVE:
-                                        System.exit(0);
-                                        break;
-                                    case DialogInterface.BUTTON_NEGATIVE:
-                                        netRecipesData();
-                                        break;
-                                }
-                            }
-                        }).show();
+                showRenetDialog(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        switch (which) {
+                            case DialogInterface.BUTTON_POSITIVE:
+                                netRecipesData();
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                break;
+                        }
+                    }
+                });
             }
         }
 
     }
 
     private void setValue(JSONArray beans, Recipe recipe, boolean isCollected) {
+        if(isDestroyed() || isFinishing()){
+            return;
+        }
         collect.setSelected(isCollected);
         int width = OUtil.getScreenWidth(getActivity());
         ivImg.setMinimumHeight(OUtil.dip2px(getActivity(), 200));
@@ -239,29 +238,22 @@ public class RecipesDetailActivity extends BaseActivity {
         String params = "recipeid="+recipeid+"&isCollected="+!collect.isSelected();
         if(isLogin){
             if(!MyNetTool.netCrossWithParams(getActivity(), TuyaUser.getUserInstance().getUser().getUid(),URLs.collectRecipe,params,callback)){
-                DialogUtil.customDialog(getActivity(), null, getActivity().getString(R.string.network_error)
-                        , getActivity().getString(R.string.action_close), getActivity().getString(R.string.retry), null, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which) {
-                                    case DialogInterface.BUTTON_POSITIVE:
-                                        System.exit(0);
-                                        break;
-                                    case DialogInterface.BUTTON_NEGATIVE:
-                                        netCollect();
-                                        break;
-                                }
-                            }
-                        }).show();
+                showRenetDialog(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        switch (which) {
+                            case DialogInterface.BUTTON_POSITIVE:
+                                netCollect();
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                break;
+                        }
+                    }
+                });
             }
         }else{
             showToastError("please login first");
         }
-
-        /*        HttpParams params = new HttpParams();
-        params.put("recipeid", recipeid + "");
-        params.put("isCollected", !collect.isSelected() + "");
-        MyNetTool.netHttpParams(getActivity(),URLs.BASE+URLs.collectRecipe,callback,params);*/
     }
 
     private void animateHeartButton(View imHeart) {

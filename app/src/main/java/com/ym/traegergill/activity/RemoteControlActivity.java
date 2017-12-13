@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -26,18 +27,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.google.gson.Gson;
-import com.tuya.smart.android.device.api.IGetDataPointStatCallback;
-import com.tuya.smart.android.device.bean.DataPointBean;
-import com.tuya.smart.android.device.bean.DataPointStatBean;
-import com.tuya.smart.android.device.enums.DataPointTypeEnum;
 import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.sdk.TuyaDevice;
-import com.tuya.smart.sdk.TuyaSmartRequest;
 import com.tuya.smart.sdk.TuyaUser;
-import com.tuya.smart.sdk.api.IDevListener;
-import com.tuya.smart.sdk.api.IRequestCallback;
 import com.tuya.smart.sdk.bean.DeviceBean;
 import com.ym.traegergill.R;
 import com.ym.traegergill.broadcast.TraegerGillBroadcastHelper;
@@ -46,6 +38,7 @@ import com.ym.traegergill.db.bean.UserData;
 import com.ym.traegergill.service.TraegerGillService;
 import com.ym.traegergill.tools.Constants;
 import com.ym.traegergill.tools.OUtil;
+import com.ym.traegergill.tools.RegularUtils;
 import com.ym.traegergill.tools.SnackbarUtil;
 import com.ym.traegergill.tuya.utils.DialogUtil;
 
@@ -105,19 +98,28 @@ public class RemoteControlActivity extends BaseActivity {
     RelativeLayout cover;
     @BindView(R.id.ll_temp_chart)
     LinearLayout llTempChart;
-
-    private static final String FOOD_TEMP_EMPTY = "- -";
+    @BindView(R.id.tv_er_content)
+    TextView tvErContent;
+    @BindView(R.id.tv_ex_smoke)
+    TextView tvExSmoke;
+    @BindView(R.id.ll_bottom_content)
+    LinearLayout llBottomContent;
+    @BindView(R.id.tv_set_point_content)
+    TextView tvSetPointContent;
+    @BindView(R.id.ll_set_point_value)
+    LinearLayout llSetPointValue;
     private TuyaDevice mTuyaDevice;
     private DeviceBean mDevBean;
     private String mDevId;
     private String mUid;
     private SQLiteDbUtil dbUtil;
     private boolean isRunning = false;
+    private static final String FOOD_TEMP_EMPTY = "---";
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            switch (action){
+            switch (action) {
                 case TraegerGillBroadcastHelper.ACTION_DEVICE_onDpUpdate:
                     syncData();
                     break;
@@ -132,7 +134,7 @@ public class RemoteControlActivity extends BaseActivity {
                     title.setText(mDevBean.getName());
                     break;
                 case TraegerGillBroadcastHelper.ACTION_DEVICE_onStatusChanged:
-                    boolean isOnLine = intent.getBooleanExtra("data",false);
+                    boolean isOnLine = intent.getBooleanExtra("data", false);
                     OUtil.TLog("===onStatusChanged=== : " + isOnLine);
                     if (!isOnLine) {
                         cover.setVisibility(View.VISIBLE);
@@ -142,7 +144,7 @@ public class RemoteControlActivity extends BaseActivity {
                     }
                     break;
                 case TraegerGillBroadcastHelper.ACTION_DEVICE_onNetworkStatusChanged:
-                    boolean isNetOnLine = intent.getBooleanExtra("data",false);
+                    boolean isNetOnLine = intent.getBooleanExtra("data", false);
                     OUtil.TLog("===onNetworkStatusChanged=== : " + isNetOnLine);
                     if (!isNetOnLine) {
                         cover.setVisibility(View.VISIBLE);
@@ -162,40 +164,33 @@ public class RemoteControlActivity extends BaseActivity {
     private CompoundButton.OnCheckedChangeListener checkListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            b = (!btnOnOff.isSelected());
             if (b) {
-                btnOnOff.setText("ON");
-                btnOnOff.setTextColor(getResources().getColor(R.color.orange_light));
-            } else {
+                DialogUtil.customDialog(getActivity(), null, "Turn On ?"
+                        , getActivity().getString(R.string.Confirm), getActivity().getString(R.string.action_close), null, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which) {
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        btnOnOff.setSelected(true);
+                                        btnOnOff.setText("ON");
+                                        btnOnOff.setTextColor(getResources().getColor(R.color.orange_light));
+                                        sendComPower(true);
+                                        break;
+                                    case DialogInterface.BUTTON_NEGATIVE:
+
+                                        break;
+                                }
+                            }
+                        }).show();
+            }
+            if (!b) {
+                btnOnOff.setSelected(false);
                 btnOnOff.setText("OFF");
                 btnOnOff.setTextColor(getResources().getColor(R.color.color9999));
+                sendComPower(false);
             }
 
-            HashMap<String, Object> stringObjectHashMap = new HashMap<>();
-            stringObjectHashMap.put("1", b);
-            String commandStr = JSON.toJSONString(stringObjectHashMap);
-            mTuyaDevice.publishDps(commandStr, new IControlCallback() {
-                @Override
-                public void onError(String code, String error) {
-                    enableViews(false);
-                    boolean b = btnOnOff.isChecked();
-                    btnOnOff.setChecked(!b);
-                    if (!b) {
-                        btnOnOff.setText("ON");
-                        btnOnOff.setTextColor(getResources().getColor(R.color.orange_light));
-                    } else {
-                        btnOnOff.setText("OFF");
-                        btnOnOff.setTextColor(getResources().getColor(R.color.color9999));
-                    }
-                    enableViews(true);
-                    DialogUtil.simpleSmartDialog(getActivity(), code + " : " + error, null);
-
-                }
-
-                @Override
-                public void onSuccess() {
-                    //syncData();
-                }
-            });
         }
     };
 
@@ -250,15 +245,35 @@ public class RemoteControlActivity extends BaseActivity {
         unitTexts.add(rightBottomTempUnit);
         unitTexts.add(bottomTempUnit);
         unitTexts.add(rightTopTempUnit);
-        btnOnOff.setTag(R.id.schemaId, "1");
-        for (TextView text : unitTexts) {
-            text.setTag(R.id.schemaId, "108");
-        }
-        bottomTemp.setTag(R.id.schemaId, "102");
-        midTemp.setTag(R.id.schemaId, "102");
-        leftTemp.setTag(R.id.schemaId, "103");
-        rightTopTemp.setTag(R.id.schemaId, "105");
-        rightBottomTemp.setTag(R.id.schemaId, "106");
+    }
+
+    void sendComPower(boolean power) {
+        HashMap<String, Object> stringObjectHashMap = new HashMap<>();
+        stringObjectHashMap.put(Constants.Power_DPID, power);
+        String commandStr = JSON.toJSONString(stringObjectHashMap);
+        mTuyaDevice.publishDps(commandStr, new IControlCallback() {
+            @Override
+            public void onError(String code, String error) {
+                enableViews(false);
+                boolean b = btnOnOff.isSelected();
+                btnOnOff.setSelected(!b);
+                if (!b) {
+                    btnOnOff.setText("ON");
+                    btnOnOff.setTextColor(getResources().getColor(R.color.orange_light));
+                } else {
+                    btnOnOff.setText("OFF");
+                    btnOnOff.setTextColor(getResources().getColor(R.color.color9999));
+                }
+                enableViews(true);
+                DialogUtil.simpleSmartDialog(getActivity(), code + " : " + error, null);
+
+            }
+
+            @Override
+            public void onSuccess() {
+                //syncData();
+            }
+        });
     }
 
     private ScheduledExecutorService scheduledExecutor;
@@ -274,31 +289,50 @@ public class RemoteControlActivity extends BaseActivity {
                     msg.what = vid;
                     handler.sendMessage(msg);
                 }
-            }, 0, 150, TimeUnit.MILLISECONDS);    //每间隔150ms发送Message
+            }, 0, Constants.LongPress_Send_Time, TimeUnit.MILLISECONDS);    //每间隔XXX ms发送Message
         }
     }
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (!btnOnOff.isChecked()) {
+            if (!btnOnOff.isSelected()) {
                 return;
             }
             int viewId = msg.what;
             int now;
+            String temp = bottomTemp.getText().toString();
+            if(temp.equals(FOOD_TEMP_EMPTY)){
+                return;
+            }
+            if(temp.equals(getString(R.string.FULL))){
+                temp = "505";
+            }else if(temp.equals(getString(R.string.LOW))){
+                temp = "195";
+            }
             switch (viewId) {
                 case R.id.iv_less:
-                    now = Integer.parseInt(bottomTemp.getText().toString()) - 5;
-                    if (now <= 179) {
+                    now = Integer.parseInt(temp) - 5;
+                    if (now < Constants.DEVICES_MIN_TEMP) {
+                        bottomTempUnit.setVisibility(View.GONE);
+                        bottomTemp.setText(getString(R.string.LOW));
+                        tvExSmoke.setVisibility(View.VISIBLE);
                         return;
                     }
                     bottomTemp.setText(now + "");
+                    bottomTempUnit.setVisibility(View.VISIBLE);
+                    tvExSmoke.setVisibility(View.GONE);
                     break;
                 case R.id.iv_add:
-                    now = Integer.parseInt(bottomTemp.getText().toString()) + 5;
-                    if (now >= 601) {
+                    now = Integer.parseInt(temp) + 5;
+                    if (now > Constants.DEVICES_MAX_TEMP) {
+                        bottomTempUnit.setVisibility(View.GONE);
+                        bottomTemp.setText(getString(R.string.FULL));
+                        tvExSmoke.setVisibility(View.GONE);
                         return;
                     }
+                    bottomTempUnit.setVisibility(View.VISIBLE);
+                    tvExSmoke.setVisibility(View.GONE);
                     bottomTemp.setText(now + "");
                     break;
             }
@@ -309,9 +343,15 @@ public class RemoteControlActivity extends BaseActivity {
         if (scheduledExecutor != null) {
             scheduledExecutor.shutdownNow();
             scheduledExecutor = null;
-            if (btnOnOff.isChecked()) {
-                sendCommandSetpoint(Integer.parseInt(bottomTemp.getText().toString()));
-            }else{
+            if (btnOnOff.isSelected()) {
+                String temp = bottomTemp.getText().toString();
+                if(temp.equals(getString(R.string.FULL))){
+                    temp = Constants.DEVICES_MAX_TEMP_SEND + "";
+                }else if(temp.equals(getString(R.string.LOW))){
+                    temp = Constants.DEVICES_MIN_TEMP_SEND + "";
+                }
+                sendCommandSetpoint(Integer.parseInt(temp));
+            } else {
                 syncData();
             }
         }
@@ -327,7 +367,9 @@ public class RemoteControlActivity extends BaseActivity {
         ivAdd.setOnTouchListener(longClick);
         btnOnOff.setOnCheckedChangeListener(checkListener);
     }
+
     private UserData alarmsData;
+
     private void initAlarmsDB() {
         dbUtil = SQLiteDbUtil.getSQLiteDbUtil();
         List<UserData> datas = dbUtil.query(UserData.class, "dev_id = ? and user = ?", new String[]{mDevId, mUid});
@@ -337,9 +379,11 @@ public class RemoteControlActivity extends BaseActivity {
             alarmsData = datas.get(0);
         }
     }
+    boolean isERNow;
     private void syncData() {
         initAlarmsDB();
         Map<String, Object> list = TuyaUser.getDeviceInstance().getDps(mDevId);
+        isERNow = false;
         for (Map.Entry<String, Object> entry : list.entrySet()) {
             updateData(entry);
         }
@@ -347,10 +391,10 @@ public class RemoteControlActivity extends BaseActivity {
 
     private void updateData(Map.Entry<String, Object> entry) {
         OUtil.TLog("key : " + entry.getKey() + " value : " + entry.getValue());
-        if (entry.getKey().equals(btnOnOff.getTag(R.id.schemaId)) && (boolean) entry.getValue() != btnOnOff.isChecked()) {
+        if (entry.getKey().equals(Constants.Power_DPID) && (boolean) entry.getValue() != btnOnOff.isSelected()) {
             //电源开关	Power
             enableViews(false);
-            btnOnOff.setChecked((boolean) entry.getValue());
+            btnOnOff.setSelected((boolean) entry.getValue());
             if ((boolean) entry.getValue()) {
                 btnOnOff.setText("ON");
                 btnOnOff.setTextColor(getResources().getColor(R.color.orange_light));
@@ -359,7 +403,8 @@ public class RemoteControlActivity extends BaseActivity {
                 btnOnOff.setTextColor(getResources().getColor(R.color.color9999));
             }
             enableViews(true);
-        } else if (entry.getKey().equals(bottomTempUnit.getTag(R.id.schemaId))) {
+
+        } else if (entry.getKey().equals(Constants.Temp_unit_DPID)) {
             //	温度单位切换	Temp_unit
             boolean isC = (boolean) entry.getValue();
             for (TextView text : unitTexts) {
@@ -369,54 +414,65 @@ public class RemoteControlActivity extends BaseActivity {
                     text.setText(getResources().getString(R.string.FFFF));
                 }
             }
-        } else if (entry.getKey().equals(midTemp.getTag(R.id.schemaId))) {
+        } else if (entry.getKey().equals(Constants.Set_temp_DPID)) {//leftTemp
             //设定温度	Set_temp
-            midTemp.setText(entry.getValue().toString());
-            if(!isRunning)
-                bottomTemp.setText(entry.getValue().toString());
-        } else if (entry.getKey().equals(leftTemp.getTag(R.id.schemaId))) {
+            setSetTemp(entry.getValue().toString());
+        } else if (entry.getKey().equals(Constants.Actual_temp_DPID)) {//midTemp
             //实际温度	Actual_temp
-            leftTemp.setText(entry.getValue().toString());
-        } else if (entry.getKey().equals(rightTopTemp.getTag(R.id.schemaId))) {
+            if ((int) entry.getValue() == 0) {
+                String inner = FOOD_TEMP_EMPTY;
+                midTemp.setText(inner);
+                midTempUnit.setVisibility(View.GONE);
+            } else {
+                midTemp.setText(entry.getValue().toString());
+                midTempUnit.setVisibility(View.VISIBLE);
+            }
+
+            // midTemp.setText(entry.getValue().toString());
+        } else if (entry.getKey().equals(Constants.Food_temp1_DPID)) {
             //食物温度1	Food_temp1
-            if((int)entry.getValue() == 32){
+            if ((int) entry.getValue() == 0) {
                 //没有插入探测头A
                 String inner = FOOD_TEMP_EMPTY;
                 rightTopTemp.setText(inner);
                 rightTopTempUnit.setVisibility(View.GONE);
-            }else{
+            } else {
                 rightTopTemp.setText(entry.getValue().toString());
                 rightTopTempUnit.setVisibility(View.VISIBLE);
             }
-        } else if (entry.getKey().equals(rightBottomTemp.getTag(R.id.schemaId))) {
+        } else if (entry.getKey().equals(Constants.Food_temp2_DPID)) {
             //食物温度2	Food_temp2
-            if((int)entry.getValue() == 32){
+            if ((int) entry.getValue() == 0) {
                 //没有插入探测头B
                 String inner = FOOD_TEMP_EMPTY;
                 rightBottomTemp.setText(inner);
                 rightBottomTempUnit.setVisibility(View.GONE);
-            }else{
+            } else {
                 rightBottomTemp.setText(entry.getValue().toString());
                 rightBottomTempUnit.setVisibility(View.VISIBLE);
             }
+        }else if(entry.getKey().equals(Constants.ER1_DPID)){
+            setER1((boolean)entry.getValue());
+        }else if(entry.getKey().equals(Constants.ER2_DPID)){
+            setER2((boolean)entry.getValue());
+        }else if(entry.getKey().equals(Constants.ER3_DPID)){
+            setER3((boolean)entry.getValue());
         }
         //btnOnOff.isEnabled() 说明 没有在修改setpoint
-        if (btnOnOff.isEnabled() && !midTemp.getText().equals(bottomTemp.getText())) {
-            bottomTemp.setText(midTemp.getText());
+        if (btnOnOff.isEnabled() && !leftTemp.getText().equals(bottomTemp.getText())) {//leftTemp
+            bottomTemp.setText(leftTemp.getText());
         }
         sendAlarms(entry);
     }
-
-
-    @OnClick({R.id.setting,R.id.ll_temp_chart})
+    int i = 1;
+    @OnClick({R.id.setting, R.id.ll_temp_chart})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.setting:
-                getActivity().startActivity(new Intent(getActivity(), SettingGrillActivity.class).putExtra(RemoteControl2Activity.INTENT_DEVID, mDevId));
+                getActivity().startActivity(new Intent(getActivity(), SettingGrillActivity.class).putExtra(RemoteControlActivity.INTENT_DEVID, mDevId));
                 break;
             case R.id.ll_temp_chart:
-                //修改昵称接口示例
-                getActivity().startActivity(new Intent(getActivity(), TempChartActivity.class).putExtra(RemoteControl2Activity.INTENT_DEVID, mDevId));
+                getActivity().startActivity(new Intent(getActivity(), TempChartActivity.class).putExtra(RemoteControlActivity.INTENT_DEVID, mDevId));
                 break;
         }
     }
@@ -425,7 +481,7 @@ public class RemoteControlActivity extends BaseActivity {
         enableViews(false);
         mHandler.postDelayed(mRunnable, 400);
         HashMap<String, Object> stringObjectHashMap = new HashMap<>();
-        stringObjectHashMap.put("102", temp);
+        stringObjectHashMap.put(Constants.Set_temp_DPID, temp);
         String commandStr = JSON.toJSONString(stringObjectHashMap);
         mTuyaDevice.publishDps(commandStr, new IControlCallback() {
             @Override
@@ -433,7 +489,6 @@ public class RemoteControlActivity extends BaseActivity {
                 DialogUtil.simpleSmartDialog(getActivity(), code + " : " + error, null);
                 syncData();
             }
-
             @Override
             public void onSuccess() {
 
@@ -486,7 +541,7 @@ public class RemoteControlActivity extends BaseActivity {
                 isRunning = true;
                 btnOnOff.setEnabled(false);
                 updateAddOrSubtract(view.getId());    //手指按下时触发不停的发送消息
-                switch (view.getId()){
+                switch (view.getId()) {
                     case R.id.iv_add:
                         ivAdd.setImageResource(R.drawable.icon_add_pre);
                         break;
@@ -497,7 +552,7 @@ public class RemoteControlActivity extends BaseActivity {
                 }
             } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                 isRunning = false;
-                switch (view.getId()){
+                switch (view.getId()) {
                     case R.id.iv_add:
                         ivAdd.setImageResource(R.drawable.icon_add);
                         break;
@@ -509,7 +564,7 @@ public class RemoteControlActivity extends BaseActivity {
                 stopAddOrSubtract();    //手指抬起时停止发送
             } else if (motionEvent.getAction() == MotionEvent.ACTION_CANCEL) {
                 isRunning = false;
-                switch (view.getId()){
+                switch (view.getId()) {
                     case R.id.iv_add:
                         ivAdd.setImageResource(R.drawable.icon_add);
                         break;
@@ -536,7 +591,7 @@ public class RemoteControlActivity extends BaseActivity {
             stopService(serviceIntent);
         unregisterReceiver(receiver);
 
-        if(notifyManager!=null){
+        if (notifyManager != null) {
             notifyManager.cancelAll();
         }
 
@@ -544,76 +599,87 @@ public class RemoteControlActivity extends BaseActivity {
 
     int max_actual_temp = 0;//实际温度当前最大的点
     int last_actual_temp = 0;//实际温度上一个点的温度
+
     private void sendAlarms(Map.Entry<String, Object> entry) {
-        if (alarmsData == null){
+        if (alarmsData == null) {
             return;
         }
         String dpId = entry.getKey();
         OUtil.TLog(TAG + " send dpId : " + dpId);
+        String leftTempStr = leftTemp.getText().toString();
+        String midTempStr = midTemp.getText().toString();
+        if(leftTempStr.equals(getString(R.string.FULL))){
+            leftTempStr = "505";
+        }else if(leftTempStr.equals(getString(R.string.LOW))){
+            leftTempStr = "195";
+        }
+
         //grill range alarms
         switch (dpId) {
-           // case "102":
-            case "103":
-                if (alarmsData.isFlag()) {
-                    int set_temp= Integer.parseInt(midTemp.getText().toString());
-                    int actual_temp = Integer.parseInt(leftTemp.getText().toString());
+            case Constants.Actual_temp_DPID:
+                if (alarmsData.isFlag()
+                        &&(RegularUtils.isNumeric(midTempStr))
+                        &&(RegularUtils.isNumeric(leftTempStr))
+                      /*  && (!midTemp.getText().toString().equals(FOOD_TEMP_EMPTY))
+                        && (!leftTemp.getText().toString().equals(FOOD_TEMP_EMPTY))*/) {
+                    int set_temp = Integer.parseInt(leftTempStr);//leftTemp
+                    int actual_temp = Integer.parseInt(midTempStr);//midTemp
                     int maxTemp = set_temp + alarmsData.getGill_range();
                     int minTemp = set_temp - alarmsData.getGill_range();
-                    maxTemp = (maxTemp <= 600) ? maxTemp : 600;
-                    minTemp = (minTemp >= 180) ? minTemp : 180;
-                    OUtil.TLog(TAG+" SetTempMax : " + maxTemp + " /// SetTempMin : " + minTemp + "/// Actual_temp : " + actual_temp);
-
+                    maxTemp = (maxTemp <= Constants.DEVICES_MAX_TEMP) ? maxTemp : Constants.DEVICES_MAX_TEMP;
+                    minTemp = (minTemp >= Constants.DEVICES_MIN_TEMP) ? minTemp : Constants.DEVICES_MIN_TEMP;
+                    OUtil.TLog(TAG + " SetTempMax : " + maxTemp + " /// SetTempMin : " + minTemp + "/// Actual_temp : " + actual_temp);
                     if (actual_temp < minTemp) {
                         OUtil.TLog(TAG + "  temp bad ");
                         //小于设定最小值
-                        leftTemp.setTextColor(getResources().getColor(R.color.blue_temp_less));
-                        leftTempUnit.setTextColor(getResources().getColor(R.color.blue_temp_less));
-                        if(actual_temp>=last_actual_temp){
+                        midTemp.setTextColor(getResources().getColor(R.color.blue_temp_less));//midTemp
+                        midTempUnit.setTextColor(getResources().getColor(R.color.blue_temp_less));//midTemp
+                        if (actual_temp >= last_actual_temp) {
                             //上升趋势 不警告
                             last_actual_temp = actual_temp;
-                            if(actual_temp>=max_actual_temp){
+                            if (actual_temp >= max_actual_temp) {
                                 //大于最大的点 说明之前温度没有下降过 更新 max_actual_temp
                                 max_actual_temp = actual_temp;
-                            }else{
+                            } else {
                                 //小于最大的点 说明之前温度下降过 不更新 max_actual_temp
                             }
                             setAlarms(TraegerGillBroadcastHelper.ACTION_ALARMS_ACTUAL_OK);
-                        }else{
+                        } else {
                             //下降趋势
                             last_actual_temp = actual_temp;
-                            if((max_actual_temp - actual_temp) <= Constants.temp_down_range){
+                            if ((max_actual_temp - actual_temp) <= Constants.temp_down_range) {
                                 //下降值小于20
                                 //不警告
                                 setAlarms(TraegerGillBroadcastHelper.ACTION_ALARMS_ACTUAL_OK);
-                            }else{
+                            } else {
                                 //下降值大于20
                                 //警告 复原 max_actual_temp
                                 //max_actual_temp = 0;
                                 setAlarms(TraegerGillBroadcastHelper.ACTION_ALARMS_ACTUAL_LESS);
                             }
                         }
-                    }else if (actual_temp >= minTemp && actual_temp <= maxTemp) {
+                    } else if (actual_temp >= minTemp && actual_temp <= maxTemp) {
                         //温度已经到正常范围 不警告
                         max_actual_temp = minTemp;
-                        leftTemp.setTextColor(getResources().getColor(R.color.color444));
-                        leftTempUnit.setTextColor(getResources().getColor(R.color.color444));
+                        midTemp.setTextColor(getResources().getColor(R.color.color444));
+                        midTempUnit.setTextColor(getResources().getColor(R.color.color444));
                         OUtil.TLog(TAG + "  temp ok");
                         setAlarms(TraegerGillBroadcastHelper.ACTION_ALARMS_ACTUAL_OK);
                     } else {
                         // 大于正常值
-                        leftTemp.setTextColor(getResources().getColor(R.color.orange_text));
-                        leftTempUnit.setTextColor(getResources().getColor(R.color.orange_text));
+                        midTemp.setTextColor(getResources().getColor(R.color.orange_text));
+                        midTempUnit.setTextColor(getResources().getColor(R.color.orange_text));
                         OUtil.TLog(TAG + "  temp bad ");
                         setAlarms(TraegerGillBroadcastHelper.ACTION_ALARMS_ACTUAL_MORE);
                     }
-                }else {
+                } else {
                     // 未开启警告 不警告
-                    leftTemp.setTextColor(getResources().getColor(R.color.color444));
-                    leftTempUnit.setTextColor(getResources().getColor(R.color.color444));
+                    midTemp.setTextColor(getResources().getColor(R.color.color444));
+                    midTempUnit.setTextColor(getResources().getColor(R.color.color444));
                     setAlarms(TraegerGillBroadcastHelper.ACTION_ALARMS_ACTUAL_OK);
                 }
                 break;
-            case "105":
+            case Constants.Food_temp1_DPID:
                 //Food_temp1 alarms
                 if (alarmsData.isA_temp_open() && (!rightTopTemp.getText().toString().equals(FOOD_TEMP_EMPTY))) {
                     int food_temp1 = Integer.parseInt(rightTopTemp.getText().toString());
@@ -625,12 +691,12 @@ public class RemoteControlActivity extends BaseActivity {
                         //达到设定温度及以上
                         setAlarms(TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPA_OK);
                     }
-                }else{
+                } else {
                     setAlarms(TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPA_OK);
                 }
 
                 break;
-            case "106":
+            case Constants.Food_temp2_DPID:
                 //Food_temp2 alarms
                 if (alarmsData.isB_temp_open() && (!rightBottomTemp.getText().toString().equals(FOOD_TEMP_EMPTY))) {
                     int food_temp2 = Integer.parseInt(rightBottomTemp.getText().toString());
@@ -642,7 +708,7 @@ public class RemoteControlActivity extends BaseActivity {
                         //达到设定温度及以上
                         setAlarms(TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPB_OK);
                     }
-                }else {
+                } else {
                     setAlarms(TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPB_OK);
                 }
                 break;
@@ -662,42 +728,43 @@ public class RemoteControlActivity extends BaseActivity {
             OUtil.TLog("ACTION_ALARMS_TEMPA_MORE");
             rightTopTemp.setTextColor(getResources().getColor(R.color.orange_text));
             rightTopTempUnit.setTextColor(getResources().getColor(R.color.orange_text));
-            SnackbarUtil.ShortSnackbar(title, "Probe A Temp High", SnackbarUtil.MyWarning).show();
+            //SnackbarUtil.ShortSnackbar(title, "Probe A Temp High", SnackbarUtil.MyWarning).show();
         } else if (action.equals(TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPB_MORE)) {
             OUtil.TLog("ACTION_ALARMS_TEMPB_MORE");
             rightBottomTemp.setTextColor(getResources().getColor(R.color.orange_text));
             rightBottomTempUnit.setTextColor(getResources().getColor(R.color.orange_text));
-            SnackbarUtil.ShortSnackbar(title, "Probe B Temp High", SnackbarUtil.MyWarning).show();
+            //SnackbarUtil.ShortSnackbar(title, "Probe B Temp High", SnackbarUtil.MyWarning).show();
         } else if (action.equals(TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPA_LESS)) {
             OUtil.TLog("ACTION_ALARMS_TEMPA_LESS");
             rightTopTemp.setTextColor(getResources().getColor(R.color.blue_temp_less));
             rightTopTempUnit.setTextColor(getResources().getColor(R.color.blue_temp_less));
-            SnackbarUtil.ShortSnackbar(title, "Probe A Temp Less", SnackbarUtil.MyWarning).show();
+            //SnackbarUtil.ShortSnackbar(title, "Probe A Temp Less", SnackbarUtil.MyWarning).show();
         } else if (action.equals(TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPB_LESS)) {
             OUtil.TLog("ACTION_ALARMS_TEMPB_LESS");
             rightBottomTemp.setTextColor(getResources().getColor(R.color.blue_temp_less));
             rightBottomTempUnit.setTextColor(getResources().getColor(R.color.blue_temp_less));
-            SnackbarUtil.ShortSnackbar(title, "Probe B Temp Less", SnackbarUtil.MyWarning).show();
-        }else if (action.equals(TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPB_OK)) {
+            //SnackbarUtil.ShortSnackbar(title, "Probe B Temp Less", SnackbarUtil.MyWarning).show();
+        } else if (action.equals(TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPB_OK)) {
             OUtil.TLog("ACTION_ALARMS_TEMPB_OK");
             rightBottomTemp.setTextColor(getResources().getColor(R.color.color444));
             rightBottomTempUnit.setTextColor(getResources().getColor(R.color.color444));
-        }else if (action.equals(TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPA_OK)) {
+        } else if (action.equals(TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPA_OK)) {
             OUtil.TLog("ACTION_ALARMS_TEMPA_OK");
             rightTopTemp.setTextColor(getResources().getColor(R.color.color444));
             rightTopTempUnit.setTextColor(getResources().getColor(R.color.color444));
-        }else if (action.equals(TraegerGillBroadcastHelper.ACTION_ALARMS_ACTUAL_OK)) {
+        } else if (action.equals(TraegerGillBroadcastHelper.ACTION_ALARMS_ACTUAL_OK)) {
             OUtil.TLog("ACTION_ALARMS_ACTUAL_OK");
         }
     }
+
     @SuppressLint("HandlerLeak")
-    private Handler warnHandler = new Handler(){
+    private Handler warnHandler = new Handler() {
         @Override
-        public void handleMessage(Message msg){
-            if(bitmap!=null){
+        public void handleMessage(Message msg) {
+            if (bitmap != null) {
                 notifyBuilder.setLargeIcon(bitmap);
                 notifyBuilder.setSmallIcon(R.drawable.icon_photo);
-            }else{
+            } else {
                 notifyBuilder.setSmallIcon(R.drawable.icon_photo);
             }
             notification = notifyBuilder.build();
@@ -711,19 +778,20 @@ public class RemoteControlActivity extends BaseActivity {
     private NotificationManager notifyManager = null;
     private NotificationCompat.Builder notifyBuilder = null;
     private Notification notification = null;
-    private void notifyWarn(String action){
+
+    private void notifyWarn(String action) {
         notifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notifyBuilder = new NotificationCompat.Builder(this);
-        Intent  appIntent = new Intent(getApplicationContext(),RemoteControlActivity.class);
-        appIntent.putExtra(RemoteControlActivity.INTENT_DEVID,mDevId);
+        Intent appIntent = new Intent(getApplicationContext(), RemoteControlActivity.class);
+        appIntent.putExtra(RemoteControlActivity.INTENT_DEVID, mDevId);
         appIntent.setAction(Intent.ACTION_MAIN);
         appIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);//关键的一步，设置启动模式
+        appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);//关键的一步，设置启动模式
         PendingIntent pi = PendingIntent.getActivity(this, 1000, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         notifyBuilder.setContentIntent(pi);
         notifyBuilder.setAutoCancel(true);
         notifyBuilder.setContentTitle("Device Warning");
-        switch (action){
+        switch (action) {
             case TraegerGillBroadcastHelper.ACTION_ALARMS_ACTUAL_OK:
                 notifyBuilder.setContentText("Actual Temp OK");
                 break;
@@ -736,31 +804,158 @@ public class RemoteControlActivity extends BaseActivity {
                 warnHandler.sendEmptyMessage(1);
                 break;
             case TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPA_OK:
-                notifyBuilder.setContentText("Probe A Temp OK");
+                //notifyBuilder.setContentText("Probe A Temp OK");
                 break;
             case TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPA_MORE:
-                notifyBuilder.setContentText("Probe A Temp High");
-                warnHandler.sendEmptyMessage(1);
+                // notifyBuilder.setContentText("Probe A Temp High");
+                // warnHandler.sendEmptyMessage(1);
                 break;
             case TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPA_LESS:
-                notifyBuilder.setContentText("Probe A Temp Less");
-                warnHandler.sendEmptyMessage(1);
+                // notifyBuilder.setContentText("Probe A Temp Less");
+                // warnHandler.sendEmptyMessage(1);
                 break;
             case TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPB_OK:
-                notifyBuilder.setContentText("Probe B Temp OK");
+                //notifyBuilder.setContentText("Probe B Temp OK");
                 break;
             case TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPB_MORE:
-                notifyBuilder.setContentText("Probe B Temp High");
-                warnHandler.sendEmptyMessage(1);
+                // notifyBuilder.setContentText("Probe B Temp High");
+                // warnHandler.sendEmptyMessage(1);
                 break;
             case TraegerGillBroadcastHelper.ACTION_ALARMS_TEMPB_LESS:
-                notifyBuilder.setContentText("Probe B Temp Less");
+                // notifyBuilder.setContentText("Probe B Temp Less");
                 break;
         }
     }
 
+    private void setSetTemp(String value) {
+        if(!value.equals(FOOD_TEMP_EMPTY)){
+            int set_temp = Integer.parseInt(value);
+            if(set_temp>Constants.DEVICES_MAX_TEMP){
+                //设定温度大于500
+                leftTemp.setText(getString(R.string.FULL));
+                leftTempUnit.setVisibility(View.GONE);
+                if (!isRunning){
+                    bottomTempUnit.setVisibility(View.GONE);
+                    bottomTemp.setText(getString(R.string.FULL));
+                    tvExSmoke.setVisibility(View.GONE);
+                }
+            }else if(set_temp< Constants.DEVICES_MIN_TEMP){
+                //设定温度小于200
+                leftTemp.setText(getString(R.string.LOW));
+                leftTempUnit.setVisibility(View.GONE);
+                if (!isRunning){
+                    bottomTempUnit.setVisibility(View.GONE);
+                    bottomTemp.setText(getString(R.string.LOW));
+                    tvExSmoke.setVisibility(View.VISIBLE);
+                }
+            }else{
+                //设定温度大于等于200 小于等于500
+                leftTemp.setText(value);
+                leftTempUnit.setVisibility(View.VISIBLE);
+                if (!isRunning){
+                    bottomTempUnit.setVisibility(View.VISIBLE);
+                    bottomTemp.setText(value);
+                    tvExSmoke.setVisibility(View.GONE);
+                }
+            }
+        }else{
+            // 设定温度 : ---
+            leftTemp.setText(value);
+            leftTempUnit.setVisibility(View.GONE);
+            if (!isRunning){
+                bottomTempUnit.setVisibility(View.GONE);
+                bottomTemp.setText(value);
+                tvExSmoke.setVisibility(View.GONE);
+            }
+        }
+    }
 
+    private void setER1(boolean flag) {
+        if(isERNow) {
+            //存在其他er
+            return;
+        }
+        if(flag){
+            isERNow = true;
+            //setpoint这个地方显示ER1
+            tvSetPointContent.setText("ER1");
+            tvSetPointContent.setVisibility(View.VISIBLE);
+            llSetPointValue.setVisibility(View.GONE);
+            //中间大圆圈里显示power failure
+            tvErContent.setText(getString(R.string.POWER_FAILURE));
+            tvErContent.setVisibility(View.VISIBLE);
+            llBottomContent.setVisibility(View.GONE);
+            //烤炉必定处于关机状态，按下ON/OFF按键开机
+            //todo
+        }else{
+            tvSetPointContent.setVisibility(View.GONE);
+            llSetPointValue.setVisibility(View.VISIBLE);
+            tvErContent.setVisibility(View.GONE);
+            llBottomContent.setVisibility(View.VISIBLE);
+        }
+    }
 
+    private void setER2(boolean flag) {
+        if(isERNow){
+            //存在其他er
+            if(!flag){
+                ivLess.setEnabled(true);
+                ivAdd.setEnabled(true);
+            }
+            return;
+        }
+
+        if(flag){
+            isERNow = true;
+            //setpoint这个位置显示ER2
+            tvSetPointContent.setText("ER2");
+            tvSetPointContent.setVisibility(View.VISIBLE);
+            llSetPointValue.setVisibility(View.GONE);
+            //中间大圆圈显示ignite failure
+            tvErContent.setText(getString(R.string.IGNITE_FAILURE));
+            tvErContent.setVisibility(View.VISIBLE);
+            llBottomContent.setVisibility(View.GONE);
+            //此时按下on/off按键关机，再按开机。按其它按键无效
+            ivLess.setEnabled(false);
+            ivAdd.setEnabled(false);
+            if (scheduledExecutor != null) {
+                scheduledExecutor.shutdownNow();
+                scheduledExecutor = null;
+            }
+
+        }else{
+            tvSetPointContent.setVisibility(View.GONE);
+            llSetPointValue.setVisibility(View.VISIBLE);
+            tvErContent.setVisibility(View.GONE);
+            llBottomContent.setVisibility(View.VISIBLE);
+            ivLess.setEnabled(true);
+            ivAdd.setEnabled(true);
+        }
+
+    }
+
+    private void setER3(boolean flag) {
+        if(isERNow) {
+            //存在其他er
+            return;
+        }
+        if(flag){
+            isERNow = true;
+            //setpoint位置显示ER3
+            tvSetPointContent.setText("ER3");
+            tvSetPointContent.setVisibility(View.VISIBLE);
+            llSetPointValue.setVisibility(View.GONE);
+            //中间大圆圈显示RTD FAILURE
+            tvErContent.setText(getString(R.string.RTD_FAILURE));
+            tvErContent.setVisibility(View.VISIBLE);
+            llBottomContent.setVisibility(View.GONE);
+        }else{
+            tvSetPointContent.setVisibility(View.GONE);
+            llSetPointValue.setVisibility(View.VISIBLE);
+            tvErContent.setVisibility(View.GONE);
+            llBottomContent.setVisibility(View.VISIBLE);
+        }
+    }
 
     public static boolean isServiceExisted(Context context, String className) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -781,7 +976,7 @@ public class RemoteControlActivity extends BaseActivity {
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(this,ANIMATE_SLIDE_BOTTOM_FROM_TOP);
+        overridePendingTransition(this, ANIMATE_SLIDE_BOTTOM_FROM_TOP);
 
     }
 }

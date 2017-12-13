@@ -64,7 +64,7 @@ public class AddDevicesGuidActivity extends BaseActivity {
                 Intent intent = new Intent(getActivity(), BrowserActivity.class);
                 intent.putExtra(BrowserActivity.EXTRA_LOGIN, false);
                 intent.putExtra(BrowserActivity.EXTRA_TITLE, getActivity().getString(R.string.ty_ez_help));
-                intent.putExtra(BrowserActivity.EXTRA_URI, "http://smart.tuya.com/reset");
+                intent.putExtra(BrowserActivity.EXTRA_URI, Constants.TUYA_VIEW_HELP);
                 getActivity().startActivity(intent);
                 break;
         }

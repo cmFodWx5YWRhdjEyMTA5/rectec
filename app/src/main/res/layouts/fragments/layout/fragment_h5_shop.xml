@@ -58,6 +58,7 @@
         />
     <com.yalantis.phoenix.PullToRefreshView
         android:layout_below="@id/progressBar"
+        android:layout_above="@+id/offset"
         android:id="@+id/pull_to_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -69,6 +70,10 @@
             android:layout_marginBottom="@dimen/default_bottom_tab_height"
             />
     </com.yalantis.phoenix.PullToRefreshView>
-
+    <LinearLayout
+        android:id="@+id/offset"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_bottom_tab_height"></LinearLayout>
 
 </RelativeLayout>
